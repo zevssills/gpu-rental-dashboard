@@ -1,0 +1,9 @@
+# OS / Editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*.log
+
+# Cursor / local
+.cursor/

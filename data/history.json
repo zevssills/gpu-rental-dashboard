@@ -1,0 +1,64 @@
+{
+  "_comment": "Tages-Snapshots des GPU-Rental-Dashboards. Die tägliche Automation liest diese Datei, hängt einen neuen Snapshot an und regeneriert index.html mit Delta-Anzeige ggü. Vortag. Werte: USD-Preise = Renter-Listenpreis; EUR-Werte = Host-Einnahme real (FX 0,92, abzgl. Plattform-Anteil).",
+  "metricsMeta": {
+    "vast_median_usd":      { "label": "Vast.ai Median (Renter)", "unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "vast_host_eur":        { "label": "Vast.ai Host-Einnahme",   "unit": "€/h", "goodDirection": "up", "decimals": 3 },
+    "runpod_community_usd": { "label": "RunPod Community (Renter)","unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "runpod_host_eur":      { "label": "RunPod Host-Einnahme",    "unit": "€/h", "goodDirection": "up", "decimals": 3 },
+    "ionet_usd":            { "label": "io.net (Renter)",         "unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "spheron_usd":          { "label": "Spheron (Renter)",        "unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "clore_usd":            { "label": "Clore.ai Median (Renter)","unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "market_median_usd":    { "label": "Markt-Median (alle)",     "unit": "$/h", "goodDirection": "up", "decimals": 3 },
+    "vast_utilization_pct": { "label": "Vast Auslastung",         "unit": "%",   "goodDirection": "up", "decimals": 0 },
+    "ionet_offers":         { "label": "io.net 4090-Angebote",    "unit": "",    "goodDirection": "down", "decimals": 0 },
+    "clore_offers":         { "label": "Clore 4090-Angebote",     "unit": "",    "goodDirection": "down", "decimals": 0 },
+    "inference_cagr_pct":   { "label": "AI-Inference CAGR",       "unit": "%",   "goodDirection": "up", "decimals": 2 },
+    "aethir_arr_musd":      { "label": "Aethir ARR",             "unit": "M$",  "goodDirection": "up", "decimals": 0 },
+    "total_risk_score":     { "label": "Gesamt-Risiko-Score",    "unit": "/25", "goodDirection": "down", "decimals": 1 },
+    "new_4090_price_usd":   { "label": "Neupreis RTX 4090",      "unit": "$",   "goodDirection": "down", "decimals": 0 }
+  },
+  "snapshots": [
+    {
+      "date": "2026-08-17",
+      "note": "Basis-Snapshot (erster Tag).",
+      "metrics": {
+        "vast_median_usd": 0.35,
+        "vast_host_eur": 0.14,
+        "runpod_community_usd": 0.34,
+        "runpod_host_eur": 0.29,
+        "ionet_usd": 0.30,
+        "spheron_usd": 0.53,
+        "clore_usd": 0.15,
+        "market_median_usd": 0.44,
+        "vast_utilization_pct": 98,
+        "ionet_offers": 627,
+        "clore_offers": 150,
+        "inference_cagr_pct": 12.98,
+        "aethir_arr_musd": 156,
+        "total_risk_score": 10.4,
+        "new_4090_price_usd": 2600
+      }
+    },
+    {
+      "date": "2026-08-18",
+      "note": "Manueller Lauf (Automation war noch nicht gespeichert/aktiv). Vast leicht weicher; io.net/Spheron/Auslastung vom Vortag übernommen (heute nicht neu verifiziert); Clore-Angebote gestiegen.",
+      "metrics": {
+        "vast_median_usd": 0.34,
+        "vast_host_eur": 0.13,
+        "runpod_community_usd": 0.34,
+        "runpod_host_eur": 0.29,
+        "ionet_usd": 0.30,
+        "spheron_usd": 0.53,
+        "clore_usd": 0.15,
+        "market_median_usd": 0.44,
+        "vast_utilization_pct": 98,
+        "ionet_offers": 627,
+        "clore_offers": 166,
+        "inference_cagr_pct": 12.98,
+        "aethir_arr_musd": 156,
+        "total_risk_score": 10.4,
+        "new_4090_price_usd": 2600
+      }
+    }
+  ]
+}

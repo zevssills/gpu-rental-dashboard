@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GPU-Rental Markt-Analyse &amp; Risiko-Dashboard – RTX 4090</title>
+<style>
+  :root{
+    --bg:#0b0f17; --bg2:#111725; --card:#161e2e; --card2:#1b2436;
+    --line:#26304a; --txt:#e7ecf5; --muted:#93a0bd; --muted2:#6b7899;
+    --accent:#5b8cff; --accent2:#7c5cff; --cyan:#25d0c0;
+    --green:#31d07a; --amber:#f5b73d; --red:#ff5d6c;
+    --redbg:#3a1620; --amberbg:#3a3016; --greenbg:#123321;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 15% -10%,#16203a 0%,transparent 55%),
+               radial-gradient(1000px 600px at 100% 0%,#1c1740 0%,transparent 50%),
+               var(--bg);
+    color:var(--txt); line-height:1.5; -webkit-font-smoothing:antialiased;
+    padding:32px 20px 80px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  header.hero{
+    background:linear-gradient(135deg,rgba(91,140,255,.14),rgba(124,92,255,.10));
+    border:1px solid var(--line); border-radius:20px; padding:30px 32px; box-shadow:var(--shadow);
+    position:relative; overflow:hidden;
+  }
+  header.hero:before{
+    content:""; position:absolute; right:-60px; top:-60px; width:240px; height:240px;
+    background:radial-gradient(circle,rgba(124,92,255,.35),transparent 65%); filter:blur(10px);
+  }
+  .eyebrow{color:var(--cyan);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px}
+  h1{margin:8px 0 6px;font-size:30px;line-height:1.2}
+  h1 .gpu{background:linear-gradient(90deg,#7cc4ff,#a78bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);max-width:820px;font-size:15px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .chip{background:var(--card2);border:1px solid var(--line);color:var(--muted);
+    padding:6px 12px;border-radius:999px;font-size:12.5px}
+  .chip b{color:var(--txt)}
+
+  h2{font-size:19px;margin:38px 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .ic{font-size:20px}
+  h3{font-size:15px;color:var(--muted);margin:22px 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+
+  /* KPI cards */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-radius:16px;padding:18px 18px 16px;box-shadow:var(--shadow);position:relative}
+  .kpi .label{color:var(--muted);font-size:12.5px;font-weight:600}
+  .kpi .val{font-size:26px;font-weight:800;margin-top:8px;letter-spacing:-.02em}
+  .kpi .foot{margin-top:8px;font-size:12px;color:var(--muted2)}
+  .trend{font-weight:800;font-size:13px;padding:2px 8px;border-radius:999px;display:inline-block}
+  .t-down{color:var(--red);background:var(--redbg)}
+  .t-up{color:var(--green);background:var(--greenbg)}
+  .t-flat{color:var(--amber);background:var(--amberbg)}
+
+  /* tables */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:640px;background:var(--card)}
+  th,td{padding:12px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:var(--bg2);color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0}
+  tbody tr:hover{background:rgba(91,140,255,.06)}
+  td.num{font-variant-numeric:tabular-nums;font-weight:600}
+  .plat{font-weight:700}
+  .src{color:var(--muted2);font-size:11.5px}
+
+  .badge{font-weight:700;font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+  .b-low{color:var(--green);background:var(--greenbg)}
+  .b-mid{color:var(--amber);background:var(--amberbg)}
+  .b-high{color:var(--red);background:var(--redbg)}
+  .na{color:var(--muted2);font-style:italic}
+
+  /* scenario bars */
+  .bar{height:8px;border-radius:999px;background:#222c44;overflow:hidden;margin-top:6px}
+  .bar>span{display:block;height:100%;border-radius:999px}
+  .fill-con{background:linear-gradient(90deg,#f5b73d,#ff8a3d)}
+  .fill-real{background:linear-gradient(90deg,#5b8cff,#7c5cff)}
+  .fill-opt{background:linear-gradient(90deg,#31d07a,#25d0c0)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:12px;padding:14px 16px;color:var(--muted);font-size:13px;margin-top:14px}
+  .note b{color:var(--txt)}
+
+  /* recommendation */
+  .rec{border-radius:20px;padding:26px 28px;box-shadow:var(--shadow);border:1px solid var(--line);
+    background:linear-gradient(135deg,rgba(245,183,61,.14),rgba(255,138,61,.08))}
+  .rec .verdict{display:inline-block;font-size:22px;font-weight:900;letter-spacing:.02em;
+    padding:8px 18px;border-radius:12px;background:var(--amberbg);color:var(--amber);border:1px solid #5a4a1e}
+  .rec ol{margin:16px 0 0;padding-left:20px}
+  .rec li{margin:10px 0;font-size:14px}
+  .rec li b{color:#ffd98a}
+
+  ul.gaps{list-style:none;padding:0;margin:0}
+  ul.gaps li{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--muted)}
+  ul.gaps li:before{content:"⚠ ";color:var(--amber)}
+
+  footer{margin-top:40px;color:var(--muted2);font-size:12px;text-align:center;line-height:1.7}
+  a{color:#8fb4ff;text-decoration:none} a:hover{text-decoration:underline}
+  /* charts */
+  .chartcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 14px;box-shadow:var(--shadow)}
+  .chartcard svg{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;font-size:12.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:16px;height:3px;border-radius:2px;display:inline-block}
+  .dot.dash{background:transparent;border-top:3px dashed}
+  .cmp{display:grid;grid-template-columns:104px 1fr 96px;align-items:center;gap:12px;margin:11px 0;font-size:13px}
+  .cmp .plat{font-weight:700}
+  .cmp .track{background:#222c44;border-radius:999px;height:16px;overflow:hidden}
+  .cmp .track>span{display:block;height:100%;border-radius:999px}
+  .cmp .pv{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .fc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .fc{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:16px}
+  .fc .h{font-weight:800;font-size:14px;margin-bottom:4px}
+  .fc .p{font-size:12px;color:var(--muted2);margin-bottom:10px}
+  .fc table{min-width:0;background:transparent}
+  .fc td,.fc th{border-bottom:1px solid var(--line);padding:6px 4px;font-size:12.5px}
+  .prob{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.fc-grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">DePIN &amp; GPU-Rental · Kaufentscheidung</div>
+    <h1>🤖 GPU-Rental Markt-Analyse &amp; Risiko-Dashboard – <span class="gpu">RTX 4090</span></h1>
+    <p class="sub">Datenbasierte Entscheidungshilfe: Gebraucht-PC mit RTX 4090 (24&nbsp;GB) für 3.500&nbsp;€ kaufen und
+      auf Vast.ai / RunPod / io.net / Aethir / Spheron / Clore.ai vermieten – oder warten?</p>
+    <div class="meta">
+      <span class="chip">📍 Standort: <b>Trier, DE</b></span>
+      <span class="chip">☀️ Strom: <b>0 €/kWh (20 kWp PV + 13,5 kWh)</b></span>
+      <span class="chip">💶 Investition: <b>3.500 €</b></span>
+      <span class="chip">⚡ Verbrauch: <b>~600 W</b></span>
+      <span class="chip">🗓️ Datenstand: <b>18.08.2026</b></span>
+      <span class="chip">💱 FX-Annahme: <b>1 $ ≈ 0,92 €</b></span>
+    </div>
+  </header>
+
+  <!-- ============ KPI ============ -->
+  <h2><span class="ic">📊</span> KPI-Übersicht</h2>
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">RTX 4090 Median-Preis (Vast.ai)</div>
+      <div class="val">~0,34 $ <span style="font-size:15px;color:var(--muted)">/h (≈0,31 €)</span></div>
+      <div class="foot"><span class="trend t-down">↓ −0,01 $ vs. Vortag</span> &nbsp;Range 0,11–2,72 $</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Verfügbare RTX 4090 Nodes</div>
+      <div class="val">hoch</div>
+      <div class="foot"><span class="trend t-up">≈98 % belegt</span> Vast: 3.499 gemietet / 54 frei (08/26)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Markt-CAGR (AI-Inference)</div>
+      <div class="val">12,98 %</div>
+      <div class="foot"><span class="trend t-up">↑ wachsend</span> Spanne 13–26 % je Report</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Gesamt-Risiko-Score</div>
+      <div class="val">10,4 <span style="font-size:15px;color:var(--muted)">/ 25</span></div>
+      <div class="foot"><span class="badge b-mid">MITTEL</span></div>
+    </div>
+  </div>
+
+  <!-- ============ TAGES-VERGLEICH (auto) ============ -->
+  <h2><span class="ic">🔄</span> Änderungen ggü. Vortag <span id="cmp-dates" class="src" style="font-weight:400"></span></h2>
+  <div id="daily-compare" class="chartcard">
+    <div class="src">Wird täglich um 08:00 durch die Automation aktualisiert (Datenquelle: <code>data/history.json</code>).</div>
+  </div>
+
+  <!-- ============ AUFGABE 1: PLATTFORM-PREISE ============ -->
+  <h2><span class="ic">🖥️</span> Aufgabe 1 · Plattform-Preise, Angebot &amp; Trend</h2>
+
+  <div class="note" style="border-left-color:var(--cyan)">
+    <b>Begriffe (wichtig, um $/€ und Preis/Gewinn nicht zu verwechseln):</b>
+    <br>• <b>Renter-Preis ($/h)</b> = was der <b>Mieter</b> zahlt (Listen-/Marktpreis, in <b>US-Dollar</b>, wie von den Quellen angegeben).
+    <br>• <b>Host-Einnahme (real, €/h)</b> = was <b>du</b> nach Plattform-Anteil bekommst, in <b>Euro</b> umgerechnet (FX <b>1 $ ≈ 0,92 €</b>).
+    <br>• <b>Gewinn (€/h)</b> = Host-Einnahme <b>minus</b> Stromkosten (bei dir dank PV = 0 €) – erst im Finanz-Teil (Aufgabe 3).
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Plattform</th><th>Min $/h<br><span class="src">Renter</span></th><th>Median $/h<br><span class="src">Renter</span></th><th>Max $/h<br><span class="src">Renter</span></th>
+          <th style="color:var(--cyan)">Host-Einnahme<br>real €/h</th>
+          <th>Angebot (Nodes)</th><th>Auslastung</th><th>30-Tage-Trend</th><th>Auszahlung</th><th>Quelle (Datum)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="plat">Vast.ai</td>
+          <td class="num">0,13</td><td class="num">~0,35</td><td class="num">2,72</td>
+          <td class="num" style="color:var(--cyan)">≈0,14 €<br><span class="src">real ~0,12–0,16</span></td>
+          <td>Marktplatz, 17.000+ GPUs / 1.400+ Hosts (4090-Angebote schwanken)</td>
+          <td><b style="color:var(--green)">~98 %</b> belegt (akt.)<br><span class="src">65–85 % Steady-State</span></td>
+          <td><span class="trend t-down">↓ ~-20 %</span></td>
+          <td>Fiat / USD</td>
+          <td class="src">vast.ai/pricing; getdeploying (08/26); synpixcloud (30.07.26); rentgpu (08/26)</td>
+        </tr>
+        <tr>
+          <td class="plat">RunPod</td>
+          <td class="num">0,32</td><td class="num">0,34 <span class="src">(Community)</span></td><td class="num">0,74 <span class="src">(Secure)</span></td>
+          <td class="num" style="color:var(--cyan)">≈0,29 €<br><span class="src">93 % Host-Anteil</span></td>
+          <td>30+ Regionen, 2 Tiers</td>
+          <td>60–85 %<br><span class="src">(Community-Benchmark)</span></td>
+          <td><span class="trend t-flat">→ stabil</span></td>
+          <td>Fiat / USD</td>
+          <td class="src">runpod.io/pricing; computeprices (11.08.26); gpurentalprices (17.08.26)</td>
+        </tr>
+        <tr>
+          <td class="plat">io.net</td>
+          <td class="num">0,24</td><td class="num">~0,28–0,42</td><td class="num">0,63</td>
+          <td class="num" style="color:var(--cyan)">≈0,22 €<br><span class="src">80 % Host-Anteil, Token</span></td>
+          <td>~627 Angebote (rentgpu); Marketing: „28.432" · Netz 200.000+ GPUs</td>
+          <td><span class="na">n/v (Token-Netz)</span></td>
+          <td><span class="trend t-flat">→ k. A.</span></td>
+          <td>Token (IO) / Fiat</td>
+          <td class="src">computeprices (13.08.26); io.net FAQ; rentgpu; computecomparison</td>
+        </tr>
+        <tr>
+          <td class="plat">Aethir</td>
+          <td class="num na" colspan="3">nicht verfügbar – kein Einzel-Host-Angebot für private RTX 4090</td>
+          <td class="na">n/v</td>
+          <td>Enterprise-Container (H100/H200/B200/B300); 435.000+ GPU-Container / 94 Länder</td>
+          <td><span class="na">n/v</span></td>
+          <td><span class="trend t-up">↑ ARR</span></td>
+          <td>Token (ATH)</td>
+          <td class="src">aethir.com (2026); dextools (05/26)</td>
+        </tr>
+        <tr>
+          <td class="plat">Spheron</td>
+          <td class="num">0,53</td><td class="num">0,53–0,55</td><td class="num"><span class="na">n/v</span></td>
+          <td class="num" style="color:var(--cyan)">≈0,45 €<br><span class="src">Host-Anteil n/v</span></td>
+          <td>Marktplatz-Aggregator (Tier 2/3/4 DC)</td>
+          <td>65–85 %<br><span class="src">(typ. Benchmark)</span></td>
+          <td><span class="trend t-flat">→ ~stabil</span></td>
+          <td>Fiat / Krypto</td>
+          <td class="src">spheron.network/pricing (01.08.26); gpurentalprices (01.08.26)</td>
+        </tr>
+        <tr>
+          <td class="plat">Clore.ai</td>
+          <td class="num">0,05 <span class="src">(spot)</span></td><td class="num">~0,15</td><td class="num">1,42</td>
+          <td class="num" style="color:var(--cyan)">≈0,12 €<br><span class="src">85 % Host-Anteil, Krypto</span></td>
+          <td>~149–166 4090-Angebote · 312+ Listings/Tag · 34 Regionen</td>
+          <td>65–85 %<br><span class="src">(typ. Benchmark)</span></td>
+          <td><span class="trend t-down">↓ ~-57 %</span></td>
+          <td>BTC / USDT / CLORE</td>
+          <td class="src">clore.ai/rent-4090 (live); rentgpu (08/26); docs.clore.ai</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <b>Markt-Kontext:</b> Aggregierter On-Demand-<b>Median aller Anbieter ≈ 0,44 $/h</b>, gefallen um
+    <b>~27 %</b> ggü. 08/2025 (0,60 $ → 0,44 $) – Quelle: getdeploying (08/2026). Neupreis einer neuen RTX 4090 24&nbsp;GB
+    ≈ <b>2.600 $ (≈ 2.400 €)</b> – Quelle: gpurentalprices/Eton (13.08.2026). Der Kaufpreis von 3.500 € liegt somit deutlich darüber.
+    <br><b>Währung:</b> Preisspalten sind in <b>$</b> (wie von den Quellen geliefert); die Spalte <b>„Host-Einnahme real €/h"</b>
+    rechnet in € um (1 $ ≈ 0,92 €) <b>und</b> zieht den jeweiligen Plattform-Anteil ab (Vast/Clore 85 %, RunPod 93 %, io.net 80 %).
+    <br><b>Hinweis Auslastung:</b> Offizielle utilization-% publiziert keine Plattform. Die obigen Werte stammen aus
+    <b>realen Host-Erfahrungsberichten</b> (Reddit r/vast_ai, r/LocalLLaMA-Umfeld, Community-Guides, Live-Host-Videos, 08/2026) –
+    Details siehe Abschnitt „Host-Erfahrungsberichte" unten.
+  </div>
+
+  <!-- ============ AUFGABE 2: MAKRO ============ -->
+  <h2><span class="ic">📈</span> Aufgabe 2 · Markt-Wachstum (Makro)</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Kennzahl</th><th>Wert 2026</th><th>Prognose</th><th>CAGR</th><th>Quelle (Datum)</th></tr></thead>
+      <tbody>
+        <tr><td class="plat">AI-Inference-Markt</td><td class="num">117,8 Mrd $</td><td>312,6 Mrd $ (2034)</td><td class="num">12,98 %</td><td class="src">Fortune Business Insights (2026)</td></tr>
+        <tr><td class="plat">AI-Inference (alt. Schätzung)</td><td class="num">126,2 Mrd $</td><td>520,7 Mrd $ (2034)</td><td class="num">19,4 %</td><td class="src">Polaris Market Research (2026)</td></tr>
+        <tr><td class="plat">AI-Inference-<b>Infrastruktur</b></td><td class="num">28,7 Mrd $</td><td>230,0 Mrd $ (2035)</td><td class="num">26,02 %</td><td class="src">SNS Insider (2026)</td></tr>
+        <tr><td class="plat">AI-Training-GPU-Markt</td><td class="na" colspan="2">separater CAGR nicht sauber abgreifbar → Datenlücke</td><td class="na">n/v</td><td class="src">—</td></tr>
+        <tr><td class="plat">DePIN – io.net</td><td class="num">200.000+ GPUs</td><td>130+ Länder</td><td class="na">—</td><td class="src">io.net FAQ (2026)</td></tr>
+        <tr><td class="plat">DePIN – Aethir</td><td class="num">156–166 Mio $ ARR</td><td>435.000+ Container · 1,4–1,5 Mrd Compute-h</td><td class="na">—</td><td class="src">Aethir / dextools (Q3'25–05/26)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ CHART + PROGNOSE ============ -->
+  <h2><span class="ic">📉</span> Preis-Trend-Chart &amp; Prognose (nächste Tage/Wochen)</h2>
+
+  <div class="chartcard">
+    <div style="font-weight:700;font-size:14px;margin-bottom:2px">RTX 4090 · Median On-Demand-Mietpreis ($/h) – Verlauf &amp; Projektion</div>
+    <div class="src" style="margin-bottom:10px">Historie: anbieterübergreifender Median (getdeploying, 08/2025→08/2026: 0,60 $ → 0,44 $, ≈ −27 % YoY). Projektion = Modellrechnung, keine Garantie.</div>
+    <svg viewBox="0 0 800 320" role="img" aria-label="Preis-Trend RTX 4090">
+      <!-- gridlines -->
+      <g stroke="#26304a" stroke-width="1">
+        <line x1="50" y1="57.14" x2="780" y2="57.14"/>
+        <line x1="50" y1="131.43" x2="780" y2="131.43"/>
+        <line x1="50" y1="205.71" x2="780" y2="205.71"/>
+        <line x1="50" y1="280" x2="780" y2="280"/>
+      </g>
+      <!-- y labels -->
+      <g fill="#6b7899" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">
+        <text x="44" y="60">0,60&#36;</text>
+        <text x="44" y="134">0,50&#36;</text>
+        <text x="44" y="209">0,40&#36;</text>
+        <text x="44" y="283">0,30&#36;</text>
+      </g>
+      <!-- forecast start divider -->
+      <line x1="675.71" y1="20" x2="675.71" y2="280" stroke="#7c5cff" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
+      <text x="672" y="34" fill="#a78bff" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">heute (17.08.26)</text>
+      <text x="682" y="34" fill="#93a0bd" font-size="11" font-family="Segoe UI,sans-serif">Prognose &#8594;</text>
+      <!-- x labels -->
+      <g fill="#6b7899" font-size="11" text-anchor="middle" font-family="Segoe UI,sans-serif">
+        <text x="50" y="298">Aug&#8217;25</text>
+        <text x="206" y="298">Nov&#8217;25</text>
+        <text x="363" y="298">Feb&#8217;26</text>
+        <text x="519" y="298">Mai&#8217;26</text>
+        <text x="676" y="298">Aug&#8217;26</text>
+        <text x="780" y="298">Okt&#8217;26</text>
+      </g>
+      <!-- historical line -->
+      <polyline fill="none" stroke="#5b8cff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"
+        points="50,57.14 102.14,68.29 154.29,79.43 206.43,90.57 258.57,101 310.71,111.4 362.86,121.03 415,131.43 467.14,140.34 519.29,150 571.43,158.91 623.57,167.83 675.71,176"/>
+      <!-- stabilization forecast -->
+      <polyline fill="none" stroke="#31d07a" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
+        points="675.71,176 727.86,176 780,176"/>
+      <!-- base forecast -->
+      <polyline fill="none" stroke="#f5b73d" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
+        points="675.71,176 727.86,184.17 780,192.34"/>
+      <!-- bear forecast -->
+      <polyline fill="none" stroke="#ff5d6c" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
+        points="675.71,176 727.86,202 780,226.5"/>
+      <!-- markers -->
+      <circle cx="50" cy="57.14" r="3.5" fill="#5b8cff"/>
+      <circle cx="675.71" cy="176" r="4.5" fill="#fff" stroke="#5b8cff" stroke-width="2"/>
+    </svg>
+    <div class="legend">
+      <span><i class="dot" style="background:#5b8cff"></i> Historie (Median)</span>
+      <span><i class="dot dash" style="border-color:#31d07a"></i> Stabilisierung</span>
+      <span><i class="dot dash" style="border-color:#f5b73d"></i> Basis-Trend (−2,5 %/Mon)</span>
+      <span><i class="dot dash" style="border-color:#ff5d6c"></i> Bear-Case (−8 %/Mon)</span>
+    </div>
+  </div>
+
+  <h3>Plattform-Preisvergleich · aktueller Median $/h (17.08.2026)</h3>
+  <div class="chartcard">
+    <div class="cmp"><span class="plat">Clore.ai</span><span class="track"><span style="width:25%;background:linear-gradient(90deg,#31d07a,#25d0c0)"></span></span><span class="pv">0,15 $</span></div>
+    <div class="cmp"><span class="plat">io.net</span><span class="track"><span style="width:50%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">~0,30 $</span></div>
+    <div class="cmp"><span class="plat">RunPod</span><span class="track"><span style="width:57%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">0,34 $</span></div>
+    <div class="cmp"><span class="plat">Vast.ai</span><span class="track"><span style="width:58%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">~0,35 $</span></div>
+    <div class="cmp"><span class="plat">Spheron</span><span class="track"><span style="width:90%;background:linear-gradient(90deg,#f5b73d,#ff8a3d)"></span></span><span class="pv">0,53 $</span></div>
+    <div class="cmp"><span class="plat">Aethir</span><span class="track"><span style="width:0%"></span></span><span class="pv na">n/v</span></div>
+  </div>
+
+  <h3>Analyse &amp; Prognose der nächsten Tage/Wochen</h3>
+  <div class="fc-grid">
+    <div class="fc" style="border-top:3px solid #f5b73d">
+      <div class="h">🟡 Basis-Szenario <span class="prob b-mid" style="background:var(--amberbg);color:var(--amber)">~55 %</span></div>
+      <div class="p">Trend der letzten 12 Monate setzt sich fort (−2,5 %/Monat ≈ −0,6 %/Woche).</div>
+      <table>
+        <tr><th>Horizont</th><th>Median $/h</th><th>≈ €/h</th></tr>
+        <tr><td>+1 Woche</td><td class="num">0,437</td><td class="num">0,40</td></tr>
+        <tr><td>+2 Wochen</td><td class="num">0,435</td><td class="num">0,40</td></tr>
+        <tr><td>+4 Wochen</td><td class="num">0,429</td><td class="num">0,39</td></tr>
+        <tr><td>+8 Wochen</td><td class="num">0,418</td><td class="num">0,38</td></tr>
+      </table>
+    </div>
+    <div class="fc" style="border-top:3px solid #ff5d6c">
+      <div class="h">🔴 Bear-Case <span class="prob b-high" style="background:var(--redbg);color:var(--red)">~25 %</span></div>
+      <div class="p">Jüngstes Tempo hält an (Vast ↓20 %, Clore ↓57 % in 30 T.) → −8 %/Monat auf den Median.</div>
+      <table>
+        <tr><th>Horizont</th><th>Median $/h</th><th>≈ €/h</th></tr>
+        <tr><td>+1 Woche</td><td class="num">0,431</td><td class="num">0,40</td></tr>
+        <tr><td>+2 Wochen</td><td class="num">0,422</td><td class="num">0,39</td></tr>
+        <tr><td>+4 Wochen</td><td class="num">0,405</td><td class="num">0,37</td></tr>
+        <tr><td>+8 Wochen</td><td class="num">0,372</td><td class="num">0,34</td></tr>
+      </table>
+    </div>
+    <div class="fc" style="border-top:3px solid #31d07a">
+      <div class="h">🟢 Stabilisierung <span class="prob b-low" style="background:var(--greenbg);color:var(--green)">~20 %</span></div>
+      <div class="p">Q4-AI-Nachfrage + neue Modell-Releases stützen Inference → Median seitwärts ~0,44 $.</div>
+      <table>
+        <tr><th>Horizont</th><th>Median $/h</th><th>≈ €/h</th></tr>
+        <tr><td>+1 Woche</td><td class="num">0,440</td><td class="num">0,40</td></tr>
+        <tr><td>+2 Wochen</td><td class="num">0,441</td><td class="num">0,41</td></tr>
+        <tr><td>+4 Wochen</td><td class="num">0,443</td><td class="num">0,41</td></tr>
+        <tr><td>+8 Wochen</td><td class="num">0,450</td><td class="num">0,41</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Interpretation:</b> Der wahrscheinlichste Pfad ist eine <b>leichte, anhaltende Abwärtsbewegung</b> (Basis-Szenario):
+    In 2 Wochen ~0,435 $/h (≈0,40 €), in 8 Wochen ~0,42 $/h (≈0,38 €). Ein steiler Absturz (Bear) ist möglich, aber die
+    extrem starken 30-Tage-Rückgänge bei Clore (−57 %) sind überwiegend <b>Spot-getrieben</b> und nicht 1:1 auf den
+    On-Demand-Median übertragbar. <b>Für deine Entscheidung heißt das:</b> Warten kostet dich in den nächsten 2 Wochen
+    voraussichtlich <b>nur ~1–3 % Miet-Ertrag</b> – aber es gibt dir Zeit, den <b>Kaufpreis nachzuverhandeln</b>
+    (größerer Hebel als der Miet-Trend). <span class="src">Modellannahmen: Fortschreibung historischer Median-Trends; keine Berücksichtigung von Schocks (neue GPU-Releases, Krypto-Crash, Nachfrage-Spikes). Keine Anlageberatung.</span>
+  </div>
+
+  <!-- ============ HOST-ERFAHRUNGSBERICHTE ============ -->
+  <h2><span class="ic">🧑‍💻</span> Host-Erfahrungsberichte (Reddit &amp; Community, real-world)</h2>
+  <div class="note" style="border-left-color:var(--cyan)">
+    <b>Datenqualität:</b> Plattformen publizieren keine offiziellen Auslastungs-%. Die folgenden Zahlen stammen aus
+    <b>Host-Erfahrungsberichten &amp; Community-Quellen</b> (Reddit r/vast_ai / r/LocalLLaMA-Umfeld, DEV-Erfahrungsbericht
+    „first week", MiningBoard/EarnifyHub/ownyourmind-Guides, Live-Host-Video, AltStreet-Marktpanel) – <b>anekdotisch</b>,
+    Stand August 2026. Keine offiziellen/garantierten Werte.
+  </div>
+
+  <h3>Auslastungs-Benchmarks (real-world)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Kennzahl</th><th>Wert</th><th>Kontext</th><th>Quelle (Datum)</th></tr></thead>
+      <tbody>
+        <tr><td class="plat">Steady-State (gut bepreist)</td><td class="num">65–85 %</td><td>d. h. 15–35 % der Zeit idle → 0 € Ertrag</td><td class="src">MiningBoard (2026)</td></tr>
+        <tr><td class="plat">Hobby-/Gelegenheits-Hosts</td><td class="num">60–75 %</td><td>ohne aktives Preis-Management</td><td class="src">MiningBoard (2026)</td></tr>
+        <tr><td class="plat">Vast aktuell (Momentaufnahme)</td><td class="num">~98 %</td><td>4090: 3.499 gemietet / 54 frei – „Vast ist komplett ausgemietet"</td><td class="src">Live-Host-Video (08/2026)</td></tr>
+        <tr><td class="plat">Tages-Schwankung (1. Woche)</td><td class="num">0–22 h/Tag</td><td>„Tag 3 = 0 $, Tag 6 = fast voll" – nicht prognostizierbar</td><td class="src">DEV-Host-Bericht (2026)</td></tr>
+        <tr><td class="plat">Aktive Renter (Nachfrage)</td><td class="num">~120.000</td><td>Entwickler auf Renter-Seite (Vast)</td><td class="src">Vast / ownyourmind (2026)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Reale Monats-Einnahmen einer RTX 4090 (Host-Berichte)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Quelle / Szenario</th><th>Brutto/Mon</th><th>Netto (nach Strom/Amort.)</th><th>Annahme</th><th>Quelle</th></tr></thead>
+      <tbody>
+        <tr><td class="plat">EarnifyHub (gute Uptime)</td><td class="num">90–250 $</td><td class="na">vor Strom</td><td>„very high demand"</td><td class="src">EarnifyHub (2026)</td></tr>
+        <tr><td class="plat">ownyourmind (AU-Strom teuer)</td><td class="num">126 $ @ 50 %</td><td class="num">40–90 $</td><td>0,35 $/h host-kept</td><td class="src">ownyourmind (2026)</td></tr>
+        <tr><td class="plat">ownyourmind @ 30 % Util.</td><td class="num">76 $</td><td class="num">~59 $</td><td>216 h/Mon</td><td class="src">ownyourmind (2026)</td></tr>
+        <tr><td class="plat">DEV-Bericht (steady-state)</td><td class="num">50–130 $</td><td class="na">demand-abhängig</td><td>„brutale Margen 2026"</td><td class="src">DEV Community (2026)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rec" style="background:linear-gradient(135deg,rgba(37,208,192,.14),rgba(91,140,255,.08));margin-top:18px">
+    <span class="verdict" style="background:rgba(37,208,192,.16);color:var(--cyan);border-color:#1e5a54">⚡ Wichtigster Befund: Belegung ↑ ABER Preis ↓</span>
+    <p style="margin:16px 0 0;color:var(--muted);font-size:14px">
+      Die Karten werden aktuell <b>fast durchgehend gemietet (~98 %)</b> – aber zu <b>niedrigen Clearing-Preisen</b>.
+      Auf Vast räumen 4090er bei nur <b>~0,135–0,17 $/h</b> (≈0,13–0,16 €), obwohl die Belegung sehr hoch ist. Das heißt:
+      Deine ursprüngliche Preisannahme (0,30–0,40 €/h) ist <b>für Vast zu optimistisch</b>; Auslastung dagegen
+      <b>zu pessimistisch</b>. Die beiden Effekte heben sich teilweise auf.
+    </p>
+    <p style="margin:12px 0 0;color:var(--muted);font-size:13.5px">
+      <b style="color:#7ce7dc">Divergenz der Plattformen (AltStreet, Nov'25→Jul'26):</b> Vast-4090-Median <b>−58 %</b>
+      (0,402 $ → 0,169 $), RunPod <b>+11 %</b> (0,465 $ → 0,515 $). Preis-Spread zwischen den Venues auf <b>3,1×</b> gewachsen.
+    </p>
+  </div>
+
+  <h3>Host-Anteil, Gebühren &amp; Auszahlung pro Plattform</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Plattform</th><th>Host behält</th><th>Gebühr</th><th>Auszahlung</th><th>Min. Auszahlung</th><th>Hinweis</th></tr></thead>
+      <tbody>
+        <tr><td class="plat">RunPod</td><td class="num">93 %</td><td class="num">~7 %</td><td>USD (Fiat)</td><td class="num">50 $</td><td>höchster Preis, geringstes Einzel-Host-Volumen</td></tr>
+        <tr><td class="plat">Vast.ai</td><td class="num">85 %*</td><td class="num">~15 %</td><td>BTC / USD</td><td class="num">20 $</td><td>*Marge renter-seitig (seit 06/24); tiefste Nachfrage</td></tr>
+        <tr><td class="plat">Clore.ai</td><td class="num">85 %</td><td class="num">~15 %</td><td>CLORE / BTC / USD</td><td class="na">—</td><td>Krypto-Auszahlung → Token-/Volatilitätsrisiko</td></tr>
+        <tr><td class="plat">io.net</td><td class="num">80 %</td><td class="num">~20 %</td><td>IO-Token</td><td class="na">—</td><td>höchste Gebühr + Token-Risiko</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <b>Konsequenz für dein Finanzmodell:</b> Auf <b>Vast</b> realistisch ≈ <b>0,15 $/h × 720 h × ~90 % ≈ 97 $/Mon (≈89 €)</b>
+    brutto – wegen 0 € Strom ≈ dein Netto. Das entspricht in etwa dem <b>konservativen bis realistischen</b> Szenario weiter unten,
+    obwohl die Auslastung viel höher ist – der niedrige Preis frisst den Vorteil auf. Auf <b>RunPod</b> höherer Preis
+    (0,34 $/h × 93 %), aber als Einzel-Host weniger Jobs. <b>Empfehlung der Hosts:</b> Multi-Plattform betreiben,
+    On-Demand aufs <b>25. Perzentil</b> der Cohort setzen, Interruptible bei <b>50 %</b> des On-Demand-Preises aktivieren,
+    &amp; für planbare Erträge <b>Fiat-Plattformen (Vast/RunPod)</b> bevorzugen.
+  </div>
+
+  <!-- ============ AUFGABE 3: FINANZ ============ -->
+  <h2><span class="ic">💰</span> Aufgabe 3 · Finanz-Dashboard &amp; Amortisation</h2>
+
+  <h3>Szenario A · Mit PV (Stromkosten 0 €/kWh) – deine reale Situation</h3>
+  <p class="src" style="margin:-4px 0 10px">Alle Preise in <b>Euro</b>. „Preis/h" = angenommene Host-Einnahme pro Stunde. Bei 0 € Strom gilt: Gewinn = Einnahmen.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>Szenario</th><th>Auslastung</th><th>Preis/h (€, Annahme)</th><th>Mietstd./Mon</th>
+        <th>Einnahmen/Mon</th><th>Gewinn/Mon</th><th>Amortisation</th><th>3-Jahres-Gewinn</th>
+      </tr></thead>
+      <tbody>
+        <tr style="background:rgba(37,208,192,.08)">
+          <td class="plat" style="color:var(--cyan)">Markt-real (Vast)<br><span class="src">Host-Berichte 08/26</span></td><td>~90 %</td><td class="num">0,14 €</td><td class="num">648 h</td>
+          <td class="num">90,72 €</td><td class="num">90,72 €</td><td class="num">38,6 Mon</td>
+          <td class="num">3.265,92 €<br><span class="src">netto −234 € (nach Invest)</span>
+            <div class="bar"><span style="width:45%;background:linear-gradient(90deg,#25d0c0,#5b8cff)"></span></div></td>
+        </tr>
+        <tr>
+          <td class="plat">Konservativ</td><td>30 %</td><td class="num">0,30 €</td><td class="num">216 h</td>
+          <td class="num">64,80 €</td><td class="num">64,80 €</td><td class="num">54,0 Mon</td>
+          <td class="num">2.332,80 €<br><span class="src">netto −1.167 € (nach Invest)</span>
+            <div class="bar"><span class="fill-con" style="width:32%"></span></div></td>
+        </tr>
+        <tr>
+          <td class="plat">Realistisch</td><td>50 %</td><td class="num">0,35 €</td><td class="num">360 h</td>
+          <td class="num">126,00 €</td><td class="num">126,00 €</td><td class="num">27,8 Mon</td>
+          <td class="num">4.536,00 €<br><span class="src">netto +1.036 € (nach Invest)</span>
+            <div class="bar"><span class="fill-real" style="width:62%"></span></div></td>
+        </tr>
+        <tr>
+          <td class="plat">Optimistisch</td><td>70 %</td><td class="num">0,40 €</td><td class="num">504 h</td>
+          <td class="num">201,60 €</td><td class="num">201,60 €</td><td class="num">17,4 Mon</td>
+          <td class="num">7.257,60 €<br><span class="src">netto +3.758 € (nach Invest)</span>
+            <div class="bar"><span class="fill-opt" style="width:100%"></span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Szenario B · Zum Vergleich mit Netzstrom (0,30 €/kWh · 600 W ≈ 0,18 €/Mietstd.)</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>Szenario</th><th>Einnahmen/Mon</th><th>Stromkosten/Mon</th><th>Gewinn/Mon</th><th>Amortisation</th><th>3-Jahres-Gewinn</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="plat">Konservativ</td><td class="num">64,80 €</td><td class="num">38,88 €</td><td class="num">25,92 €</td><td class="num">135,0 Mon</td><td class="num">933 € <span class="src">(netto −2.567 €)</span></td></tr>
+        <tr><td class="plat">Realistisch</td><td class="num">126,00 €</td><td class="num">64,80 €</td><td class="num">61,20 €</td><td class="num">57,2 Mon</td><td class="num">2.203 € <span class="src">(netto −1.297 €)</span></td></tr>
+        <tr><td class="plat">Optimistisch</td><td class="num">201,60 €</td><td class="num">90,72 €</td><td class="num">110,88 €</td><td class="num">31,6 Mon</td><td class="num">3.992 € <span class="src">(netto +492 €)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <b>So liest du die Tabelle (alles in €):</b> Die Zeilen <i>Konservativ / Realistisch / Optimistisch</i> sind <b>deine
+    Annahmen</b> (0,30–0,40 €/h). Die cyan-farbige Zeile <b>„Markt-real (Vast)"</b> nutzt die <b>tatsächliche
+    Host-Einnahme aus den Reddit-/Host-Berichten</b>: ~0,14 €/h (= Vast-Clearing ~0,15 $ × FX 0,92), dafür aber ~90 %
+    Auslastung → <b>90,72 €/Monat, Amortisation 38,6 Monate</b>.
+    <br><b>Einschränkungen:</b> (1) Bei den Annahme-Zeilen sind <b>Plattformgebühren noch nicht abgezogen</b>; in der
+    Markt-real-Zeile <b>schon</b> (Vast: Host behält seinen Preis, Marge liegt renter-seitig). (2) Der reale Vast-Preis
+    (~0,14 €) liegt <b>unter</b> deiner konservativen Annahme (0,30 €) – deshalb ist „Markt-real" die ehrlichste Zeile.
+    (3) Der PV-Vorteil (0 € Strom) ist <b>entscheidend</b> – siehe Szenario B mit Netzstrom.
+  </div>
+
+  <!-- ============ AUFGABE 4: RISIKO ============ -->
+  <h2><span class="ic">⚠️</span> Aufgabe 4 · Risiko-Dashboard</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>Risiko</th><th>Wahrsch. (1–5)</th><th>Auswirkung (1–5)</th><th>Score</th><th>Einstufung</th><th>Gegenmaßnahme</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="plat">1 · Nachfrage-Einbruch (Preise fallen, zu viele Nodes)</td>
+          <td class="num">4</td><td class="num">4</td><td class="num">16</td><td><span class="badge b-high">HOCH</span></td>
+          <td>Multi-Plattform, Nische (FLUX/ComfyUI/vLLM), Reserved+On-Demand-Mix, Trend wöchentlich prüfen</td>
+        </tr>
+        <tr>
+          <td class="plat">2 · Hardware-Ausfall (GPU, Wakü-Pumpe, PSU)</td>
+          <td class="num">3</td><td class="num">4</td><td class="num">12</td><td><span class="badge b-mid">MITTEL</span></td>
+          <td>Marken-PSU, Temp-/Pumpen-Monitoring, Garantie, ggf. Luftkühlung, Ersatzteile bevorraten</td>
+        </tr>
+        <tr>
+          <td class="plat">3 · Wertverlust GPU (neue Generationen)</td>
+          <td class="num">4</td><td class="num">3</td><td class="num">12</td><td><span class="badge b-mid">MITTEL</span></td>
+          <td>Schnelle Amortisation, 4090 bereits „Legacy" (RTX 5090/Blackwell da) → früh verkaufen, Restwert nutzen</td>
+        </tr>
+        <tr>
+          <td class="plat">4 · Plattform-Risiko (Regeländerung, Node-Sperre)</td>
+          <td class="num">3</td><td class="num">3</td><td class="num">9</td><td><span class="badge b-mid">MITTEL</span></td>
+          <td>Über mehrere Plattformen streuen, Regeln einhalten, Auszahlungs-Wallets/Konten redundant</td>
+        </tr>
+        <tr>
+          <td class="plat">5 · Strompreis-Risiko (falls PV nicht reicht)</td>
+          <td class="num">2</td><td class="num">2</td><td class="num">4</td><td><span class="badge b-low">NIEDRIG</span></td>
+          <td>Last in sonnenreiche Zeiten legen, Speicher nutzen, im Winter Betrieb drosseln</td>
+        </tr>
+        <tr>
+          <td class="plat">6 · Token-Volatilität (Krypto-Auszahlung DePIN)</td>
+          <td class="num">4</td><td class="num">2</td><td class="num">8</td><td><span class="badge b-mid">MITTEL</span></td>
+          <td>Fiat-Plattformen (Vast/RunPod) bevorzugen, Token sofort in Fiat/Stablecoin tauschen</td>
+        </tr>
+        <tr>
+          <td class="plat">7 · Wettbewerbs-Risiko (mehr Hosts drücken Preise)</td>
+          <td class="num">4</td><td class="num">3</td><td class="num">12</td><td><span class="badge b-mid">MITTEL</span></td>
+          <td>Hohe Reliability/Uptime-Score, schnelle Netzanbindung, Spezialisierung auf gefragte Workloads</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--bg2);font-weight:800">
+          <td>GESAMT-RISIKO (Durchschnitt)</td><td class="num">3,4</td><td class="num">3,0</td><td class="num">10,4</td>
+          <td><span class="badge b-mid">MITTEL</span></td><td>Beherrschbar bei Diversifikation &amp; Preisdisziplin</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ============ AUFGABE 5: EMPFEHLUNG ============ -->
+  <h2><span class="ic">🎯</span> Aufgabe 5 · Empfehlung</h2>
+  <div class="rec">
+    <span class="verdict">⏳ BEOBACHTE 2 WOCHEN</span>
+    <p style="margin:16px 0 0;color:var(--muted);font-size:14px">
+      Kein klares „Nein", aber auch kein sofortiges „Ja". Dein 0-€-Strom-Vorteil macht das Projekt grundsätzlich
+      tragfähig – der aktuelle Kaufpreis und der fallende Miet-Markt sprechen jedoch gegen einen Sofortkauf zu 3.500 €.
+    </p>
+    <p style="margin:12px 0 0;color:var(--muted);font-size:13.5px">
+      <b style="color:#ffd98a">Nuance aus den Host-Berichten:</b> Die Nachfrage ist real stark (Vast ~98 % belegt, ~120.000 Renter) –
+      das ist positiv. Aber die Karten räumen zu <b>niedrigen Preisen</b> (~0,15 $/h auf Vast), sodass die reale
+      Vast-Einnahme (~89 €/Mon) trotz Voll-Belegung nur im <b>konservativ–realistischen</b> Bereich landet. Hohe Auslastung
+      rettet die Rechnung also nicht allein – der Kaufpreis bleibt der größte Hebel.
+    </p>
+    <ol>
+      <li><b>Mietpreise fallen deutlich:</b> Vast ↓~20 %, Clore ↓~57 % in 30 Tagen; Anbieter-Median ↓27 % YoY
+        (0,60 $ → 0,44 $). → Einnahmeseite unter Druck, Timing für den Kauf ungünstig.</li>
+      <li><b>Kaufpreis zu hoch:</b> 3.500 € liegen klar über dem Neupreis einer neuen RTX 4090 (~2.600 $ ≈ 2.400 €).
+        → Auf ≤ 2.800 € nachverhandeln oder günstigeres Angebot suchen.</li>
+      <li><b>Markt-Median ≈ 0,34 $/h (≈0,31 €)</b> liegt am/unter deiner konservativen Annahme, und die 4090 ist bereits
+        „Legacy" (RTX 5090/Blackwell verfügbar). → Realistische Amortisation 28+ Monate bei steigendem Wertverlustrisiko.</li>
+    </ol>
+    <p style="margin:16px 0 0;color:var(--muted);font-size:13.5px">
+      <b style="color:#ffd98a">Kauf-Trigger (dann KAUFEN):</b> Kaufpreis ≤ 2.800 € <b>und</b> Auszahlung über Fiat-Plattform
+      (Vast/RunPod) <b>und</b> Miet-Median stabilisiert sich über 2 Wochen (kein weiterer Rückgang &gt; 10 %).
+    </p>
+  </div>
+
+  <!-- ============ DATENLÜCKEN ============ -->
+  <h2><span class="ic">🕳️</span> Offene Fragen &amp; Datenlücken</h2>
+  <ul class="gaps">
+    <li><b>Offizielle</b> Auslastungs-% pro Plattform weiterhin nicht publiziert – real-world-Benchmarks aus Host-Berichten sind eingearbeitet, bleiben aber <b>anekdotisch</b> (Momentaufnahmen, kein API-Feed).</li>
+    <li><b>AI-Training-GPU-Markt</b> als separater CAGR nicht sauber abgreifbar (nur Inference &amp; Inference-Infrastruktur 26 %).</li>
+    <li><b>Aethir &amp; io.net</b>: kein direktes Einzel-Host-Angebot für eine private RTX 4090 verifiziert – Node-Onboarding-Bedingungen prüfen.</li>
+    <li><b>Plattformgebühren &amp; Auszahlungsmodalitäten</b> (Krypto vs. Fiat, Mindestauszahlung) im Detail noch offen.</li>
+    <li><b>FX-Kurs</b> $/€ als Annahme 0,92 gesetzt – tagesaktuell verifizieren.</li>
+    <li><s>Reddit-Host-Erfahrungsberichte zur realen Auslastung</s> – <b>eingearbeitet</b> (Abschnitt „Host-Erfahrungsberichte"). Offen: größere, quantitative Stichprobe echter 4090-Host-Dashboards über mehrere Wochen.</li>
+    <li><b>Restwert-/Gebrauchtmarkt-Kurve</b> der RTX 4090 über 3 Jahre nicht quantifiziert.</li>
+  </ul>
+
+  <footer>
+    Erstellt am 17.08.2026 · Alle Preise/Zahlen mit Quelle &amp; Abfragedatum · Nicht verfügbare Daten sind explizit als
+    „n/v" markiert (nicht geraten).<br>
+    Quellen u. a.: vast.ai · runpod.io · io.net · aethir.com · spheron.network · clore.ai · madebyagents.com ·
+    getdeploying.com · gpurentalprices.com · computeprices.com · rentgpu.org · Fortune Business Insights · Polaris · SNS Insider.<br>
+    <b>Keine Anlageberatung.</b> Marktpreise schwanken – vor Kauf/Vermietung Live-Angebote der jeweiligen Plattform prüfen.
+  </footer>
+
+</div>
+
+<!-- ==================================================================
+     TAGES-VERGLEICH: Daten + Rendering
+     Die Automation ersetzt den Inhalt von #history-data (Spiegel von data/history.json)
+     durch die aktualisierte Historie und regeneriert das Dashboard.
+     Inline-JSON, damit der Vergleich auch beim Öffnen per file:// funktioniert.
+=================================================================== -->
+<script type="application/json" id="history-data">
+{
+  "metricsMeta": {
+    "vast_median_usd":      { "label": "Vast.ai Median (Renter)", "unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "vast_host_eur":        { "label": "Vast.ai Host-Einnahme",   "unit": "€/h", "goodDirection": "up",   "decimals": 3 },
+    "runpod_community_usd": { "label": "RunPod Community (Renter)","unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "runpod_host_eur":      { "label": "RunPod Host-Einnahme",    "unit": "€/h", "goodDirection": "up",   "decimals": 3 },
+    "ionet_usd":            { "label": "io.net (Renter)",         "unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "spheron_usd":          { "label": "Spheron (Renter)",        "unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "clore_usd":            { "label": "Clore.ai Median (Renter)","unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "market_median_usd":    { "label": "Markt-Median (alle)",     "unit": "$/h", "goodDirection": "up",   "decimals": 3 },
+    "vast_utilization_pct": { "label": "Vast Auslastung",         "unit": "%",   "goodDirection": "up",   "decimals": 0 },
+    "ionet_offers":         { "label": "io.net 4090-Angebote",    "unit": "",    "goodDirection": "down", "decimals": 0 },
+    "clore_offers":         { "label": "Clore 4090-Angebote",     "unit": "",    "goodDirection": "down", "decimals": 0 },
+    "inference_cagr_pct":   { "label": "AI-Inference CAGR",       "unit": "%",   "goodDirection": "up",   "decimals": 2 },
+    "aethir_arr_musd":      { "label": "Aethir ARR",             "unit": "M$",  "goodDirection": "up",   "decimals": 0 },
+    "total_risk_score":     { "label": "Gesamt-Risiko-Score",    "unit": "/25", "goodDirection": "down", "decimals": 1 },
+    "new_4090_price_usd":   { "label": "Neupreis RTX 4090",      "unit": "$",   "goodDirection": "down", "decimals": 0 }
+  },
+  "snapshots": [
+    {
+      "date": "2026-08-17",
+      "note": "Basis-Snapshot (erster Tag).",
+      "metrics": {
+        "vast_median_usd": 0.35, "vast_host_eur": 0.14, "runpod_community_usd": 0.34,
+        "runpod_host_eur": 0.29, "ionet_usd": 0.30, "spheron_usd": 0.53, "clore_usd": 0.15,
+        "market_median_usd": 0.44, "vast_utilization_pct": 98, "ionet_offers": 627,
+        "clore_offers": 150, "inference_cagr_pct": 12.98, "aethir_arr_musd": 156,
+        "total_risk_score": 10.4, "new_4090_price_usd": 2600
+      }
+    },
+    {
+      "date": "2026-08-18",
+      "note": "Manueller Lauf (Automation war noch nicht aktiv). Vast leicht weicher; Clore-Angebote gestiegen; io.net/Spheron/Auslastung vom Vortag übernommen.",
+      "metrics": {
+        "vast_median_usd": 0.34, "vast_host_eur": 0.13, "runpod_community_usd": 0.34,
+        "runpod_host_eur": 0.29, "ionet_usd": 0.30, "spheron_usd": 0.53, "clore_usd": 0.15,
+        "market_median_usd": 0.44, "vast_utilization_pct": 98, "ionet_offers": 627,
+        "clore_offers": 166, "inference_cagr_pct": 12.98, "aethir_arr_musd": 156,
+        "total_risk_score": 10.4, "new_4090_price_usd": 2600
+      }
+    }
+  ]
+}
+</script>
+<script>
+(function () {
+  var el = document.getElementById('daily-compare');
+  var datesEl = document.getElementById('cmp-dates');
+  var data;
+  try { data = JSON.parse(document.getElementById('history-data').textContent); }
+  catch (e) { el.innerHTML = '<div class="src">Historie konnte nicht geladen werden.</div>'; return; }
+
+  var meta = data.metricsMeta || {};
+  var snaps = (data.snapshots || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+
+  function fmt(v, d) {
+    if (v === null || v === undefined || isNaN(v)) return 'n/v';
+    return Number(v).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+
+  if (snaps.length < 2) {
+    datesEl.textContent = '· Basis-Tag ' + (snaps[0] ? snaps[0].date : '');
+    el.innerHTML =
+      '<div class="note" style="margin:0;border-left-color:var(--cyan)">' +
+      '<b>Erster Snapshot (Basis-Tag ' + (snaps[0] ? snaps[0].date : '') + ').</b> ' +
+      'Es gibt noch keinen Vortag zum Vergleichen. <b>Ab dem nächsten Automationslauf (morgen 08:00)</b> erscheinen hier ' +
+      'automatisch die Änderungen aller Kennzahlen ggü. dem Vortag – mit ↑/↓ und Prozent-Delta.' +
+      '</div>';
+    return;
+  }
+
+  var cur = snaps[snaps.length - 1], prev = snaps[snaps.length - 2];
+  datesEl.textContent = '· ' + prev.date + '  →  ' + cur.date;
+
+  var rows = '', changed = 0;
+  Object.keys(meta).forEach(function (key) {
+    var m = meta[key];
+    var a = prev.metrics ? prev.metrics[key] : undefined;
+    var b = cur.metrics ? cur.metrics[key] : undefined;
+    if (a === undefined || b === undefined) return;
+    var d = b - a;
+    var pct = a !== 0 ? (d / Math.abs(a)) * 100 : 0;
+    var cls = 't-flat', arrow = '→';
+    if (d > 0) { arrow = '↑'; cls = (m.goodDirection === 'up') ? 't-up' : 't-down'; }
+    else if (d < 0) { arrow = '↓'; cls = (m.goodDirection === 'down') ? 't-up' : 't-down'; }
+    if (d !== 0) changed++;
+    var deltaTxt = (d > 0 ? '+' : '') + fmt(d, m.decimals) + (m.unit ? ' ' + m.unit : '') +
+      (a !== 0 ? '  (' + (pct > 0 ? '+' : '') + fmt(pct, 1) + ' %)' : '');
+    rows +=
+      '<tr>' +
+      '<td class="plat">' + m.label + '</td>' +
+      '<td class="num">' + fmt(a, m.decimals) + (m.unit ? ' ' + m.unit : '') + '</td>' +
+      '<td class="num">' + fmt(b, m.decimals) + (m.unit ? ' ' + m.unit : '') + '</td>' +
+      '<td><span class="trend ' + cls + '">' + arrow + ' ' + deltaTxt + '</span></td>' +
+      '</tr>';
+  });
+
+  el.innerHTML =
+    '<div class="src" style="margin-bottom:10px">Vergleich <b>' + prev.date + '</b> → <b>' + cur.date +
+    '</b> · ' + changed + ' von ' + Object.keys(meta).length + ' Kennzahlen verändert. ' +
+    'Grün = für dich vorteilhafte Richtung, Rot = nachteilig.' + (cur.note ? ' <i>' + cur.note + '</i>' : '') + '</div>' +
+    '<div class="tablewrap"><table><thead><tr>' +
+    '<th>Kennzahl</th><th>Vortag (' + prev.date + ')</th><th>Heute (' + cur.date + ')</th><th>Änderung</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+})();
+</script>
+</body>
+</html>
