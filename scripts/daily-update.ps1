@@ -113,19 +113,26 @@ $htmlText = $rxDate.Replace($htmlText, { param($mm) $mm.Groups[1].Value + $today
 Log "index.html + history.json aktualisiert."
 
 # --- Git commit + push -----------------------------------------------------
+# Git schreibt Fortschritt auf stderr; deshalb hier EAP lockern und stattdessen
+# den Exit-Code pruefen (verhindert falsche Fehlermeldungen im Log).
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
 try {
   $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
-  git add -A 2>&1 | Out-Null
+  git add -A *> $null
   $status = git status --porcelain
   if ([string]::IsNullOrWhiteSpace($status)) {
     Log "Keine Aenderungen zu committen."
   } else {
-    git commit -m "Daily update $today" 2>&1 | Out-Null
-    git push origin main 2>&1 | Out-Null
-    Log "Commit + Push OK."
+    git commit -m "Daily update $today" *> $null
+    git push origin main *> $null
+    if ($LASTEXITCODE -eq 0) { Log "Commit + Push OK." }
+    else { Log "Git-Push Exit-Code $LASTEXITCODE (bitte Anmeldung/Netzwerk pruefen)." }
   }
 } catch {
   Log ("Git FEHLER: " + $_.Exception.Message)
+} finally {
+  $ErrorActionPreference = $prevEAP
 }
 
 Log "=== Lauf beendet ==="

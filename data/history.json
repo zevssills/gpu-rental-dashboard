@@ -1,5 +1,5 @@
 {
-    "_comment":  "Tages-Snapshots des GPU-Rental-Dashboards. Die tÃ¤gliche Automation liest diese Datei, hÃ¤ngt einen neuen Snapshot an und regeneriert index.html mit Delta-Anzeige ggÃ¼. Vortag. Werte: USD-Preise = Renter-Listenpreis; EUR-Werte = Host-Einnahme real (FX 0,92, abzgl. Plattform-Anteil).",
+    "_comment":  "Tages-Snapshots des GPU-Rental-Dashboards. Die tÃƒÂ¤gliche Automation liest diese Datei, hÃƒÂ¤ngt einen neuen Snapshot an und regeneriert index.html mit Delta-Anzeige ggÃƒÂ¼. Vortag. Werte: USD-Preise = Renter-Listenpreis; EUR-Werte = Host-Einnahme real (FX 0,92, abzgl. Plattform-Anteil).",
     "metricsMeta":  {
                         "vast_median_usd":  {
                                                 "label":  "Vast.ai Median (Renter)",
@@ -9,7 +9,7 @@
                                             },
                         "vast_host_eur":  {
                                               "label":  "Vast.ai Host-Einnahme",
-                                              "unit":  "â‚¬/h",
+                                              "unit":  "Ã¢â€šÂ¬/h",
                                               "goodDirection":  "up",
                                               "decimals":  3
                                           },
@@ -21,7 +21,7 @@
                                                  },
                         "runpod_host_eur":  {
                                                 "label":  "RunPod Host-Einnahme",
-                                                "unit":  "â‚¬/h",
+                                                "unit":  "Ã¢â€šÂ¬/h",
                                                 "goodDirection":  "up",
                                                 "decimals":  3
                                             },
@@ -116,7 +116,7 @@
                       },
                       {
                           "date":  "2026-08-18",
-                          "note":  "Manueller Lauf (Automation war noch nicht gespeichert/aktiv). Vast leicht weicher; io.net/Spheron/Auslastung vom Vortag Ã¼bernommen (heute nicht neu verifiziert); Clore-Angebote gestiegen.",
+                          "note":  "Manueller Lauf (Automation war noch nicht gespeichert/aktiv). Vast leicht weicher; io.net/Spheron/Auslastung vom Vortag ÃƒÂ¼bernommen (heute nicht neu verifiziert); Clore-Angebote gestiegen.",
                           "metrics":  {
                                           "vast_median_usd":  0.34,
                                           "vast_host_eur":  0.13,
