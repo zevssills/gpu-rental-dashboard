@@ -59,6 +59,27 @@
         "total_risk_score": 10.4,
         "new_4090_price_usd": 2600
       }
+    },
+    {
+      "date": "2026-08-21",
+      "note": "Catch-up-Lauf (Vergleich ggü. 18.08.). Quelle rentgpu.org. Echte Bewegung: Clore.ai $0,15→$0,18. io.net auf tatsächlichen Listenpreis $0,24 korrigiert (laut 90-Tage-Verlauf konstant). Spheron/Auslastung/Markt-Median nicht neu verifiziert (übernommen).",
+      "metrics": {
+        "vast_median_usd": 0.33,
+        "vast_host_eur": 0.11,
+        "runpod_community_usd": 0.34,
+        "runpod_host_eur": 0.29,
+        "ionet_usd": 0.24,
+        "spheron_usd": 0.53,
+        "clore_usd": 0.18,
+        "market_median_usd": 0.44,
+        "vast_utilization_pct": 98,
+        "ionet_offers": 691,
+        "clore_offers": 159,
+        "inference_cagr_pct": 12.98,
+        "aethir_arr_musd": 156,
+        "total_risk_score": 10.4,
+        "new_4090_price_usd": 2600
+      }
     }
   ]
 }
