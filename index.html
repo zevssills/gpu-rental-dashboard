@@ -153,17 +153,17 @@
     <div class="kpi">
       <div class="label">Verfügbare RTX 4090 Nodes</div>
       <div class="val">hoch</div>
-      <div class="foot"><span class="trend t-up">≈98 % belegt</span> Vast: 3.499 gemietet / 54 frei (08/26)</div>
+      <div class="foot"><span class="trend t-up">≈<span id="kpi-util">98</span> % belegt</span> Vast (Momentaufnahme)</div>
     </div>
     <div class="kpi">
       <div class="label">Markt-CAGR (AI-Inference)</div>
-      <div class="val">12,98 %</div>
+      <div class="val"><span id="kpi-cagr-val">12,98</span> %</div>
       <div class="foot"><span class="trend t-up">↑ wachsend</span> Spanne 13–26 % je Report</div>
     </div>
     <div class="kpi">
       <div class="label">Gesamt-Risiko-Score</div>
-      <div class="val">10,4 <span style="font-size:15px;color:var(--muted)">/ 25</span></div>
-      <div class="foot"><span class="badge b-mid">MITTEL</span></div>
+      <div class="val"><span id="kpi-risk-val">10,4</span> <span style="font-size:15px;color:var(--muted)">/ 25</span></div>
+      <div class="foot"><span class="badge b-mid" id="kpi-risk-badge">MITTEL</span></div>
     </div>
   </div>
 
@@ -195,8 +195,8 @@
       <tbody>
         <tr>
           <td class="plat">Vast.ai</td>
-          <td class="num">0,13</td><td class="num">~0,35</td><td class="num">2,72</td>
-          <td class="num" style="color:var(--cyan)">≈0,14 €<br><span class="src">real ~0,12–0,16</span></td>
+          <td class="num">0,13</td><td class="num">~<span id="t-vast-med">0,35</span></td><td class="num">2,72</td>
+          <td class="num" style="color:var(--cyan)">≈<span id="t-vast-host">0,14</span> €<br><span class="src">real ~0,12–0,16</span></td>
           <td>Marktplatz, 17.000+ GPUs / 1.400+ Hosts (4090-Angebote schwanken)</td>
           <td><b style="color:var(--green)">~98 %</b> belegt (akt.)<br><span class="src">65–85 % Steady-State</span></td>
           <td><span class="trend t-down">↓ ~-20 %</span></td>
@@ -205,8 +205,8 @@
         </tr>
         <tr>
           <td class="plat">RunPod</td>
-          <td class="num">0,32</td><td class="num">0,34 <span class="src">(Community)</span></td><td class="num">0,74 <span class="src">(Secure)</span></td>
-          <td class="num" style="color:var(--cyan)">≈0,29 €<br><span class="src">93 % Host-Anteil</span></td>
+          <td class="num">0,32</td><td class="num"><span id="t-runpod-med">0,34</span> <span class="src">(Community)</span></td><td class="num">0,74 <span class="src">(Secure)</span></td>
+          <td class="num" style="color:var(--cyan)">≈<span id="t-runpod-host">0,29</span> €<br><span class="src">93 % Host-Anteil</span></td>
           <td>30+ Regionen, 2 Tiers</td>
           <td>60–85 %<br><span class="src">(Community-Benchmark)</span></td>
           <td><span class="trend t-flat">→ stabil</span></td>
@@ -215,8 +215,8 @@
         </tr>
         <tr>
           <td class="plat">io.net</td>
-          <td class="num">0,24</td><td class="num">~0,28–0,42</td><td class="num">0,63</td>
-          <td class="num" style="color:var(--cyan)">≈0,22 €<br><span class="src">80 % Host-Anteil, Token</span></td>
+          <td class="num">0,24</td><td class="num">~<span id="t-ionet-med">0,30</span></td><td class="num">0,63</td>
+          <td class="num" style="color:var(--cyan)">≈<span id="t-ionet-host">0,22</span> €<br><span class="src">80 % Host-Anteil, Token</span></td>
           <td>~627 Angebote (rentgpu); Marketing: „28.432" · Netz 200.000+ GPUs</td>
           <td><span class="na">n/v (Token-Netz)</span></td>
           <td><span class="trend t-flat">→ k. A.</span></td>
@@ -235,7 +235,7 @@
         </tr>
         <tr>
           <td class="plat">Spheron</td>
-          <td class="num">0,53</td><td class="num">0,53–0,55</td><td class="num"><span class="na">n/v</span></td>
+          <td class="num">0,53</td><td class="num"><span id="t-spheron-med">0,53</span></td><td class="num"><span class="na">n/v</span></td>
           <td class="num" style="color:var(--cyan)">≈0,45 €<br><span class="src">Host-Anteil n/v</span></td>
           <td>Marktplatz-Aggregator (Tier 2/3/4 DC)</td>
           <td>65–85 %<br><span class="src">(typ. Benchmark)</span></td>
@@ -245,8 +245,8 @@
         </tr>
         <tr>
           <td class="plat">Clore.ai</td>
-          <td class="num">0,05 <span class="src">(spot)</span></td><td class="num">~0,15</td><td class="num">1,42</td>
-          <td class="num" style="color:var(--cyan)">≈0,12 €<br><span class="src">85 % Host-Anteil, Krypto</span></td>
+          <td class="num">0,05 <span class="src">(spot)</span></td><td class="num">~<span id="t-clore-med">0,15</span></td><td class="num">1,42</td>
+          <td class="num" style="color:var(--cyan)">≈<span id="t-clore-host">0,12</span> €<br><span class="src">85 % Host-Anteil, Krypto</span></td>
           <td>~149–166 4090-Angebote · 312+ Listings/Tag · 34 Regionen</td>
           <td>65–85 %<br><span class="src">(typ. Benchmark)</span></td>
           <td><span class="trend t-down">↓ ~-57 %</span></td>
@@ -947,6 +947,30 @@
     var pct = document.getElementById('plat-compare-title');
     if (pct) pct.textContent = 'Plattform-Preisvergleich · Tages-Preise $/h (' + dDMY(cur.date) + ')';
   }
+
+  // ---- KPI-Karten + Aufgabe-1-Preistabelle an neuesten Snapshot koppeln ---
+  (function () {
+    var mm = cur.metrics || {};
+    function setTxt(id, v) { var e = document.getElementById(id); if (e && v != null && !isNaN(v)) e.textContent = v; }
+    setTxt('kpi-cagr-val', fmt(mm.inference_cagr_pct, 2));
+    setTxt('kpi-risk-val', fmt(mm.total_risk_score, 1));
+    setTxt('kpi-util', fmt(mm.vast_utilization_pct, 0));
+    var rb = document.getElementById('kpi-risk-badge');
+    if (rb && mm.total_risk_score != null) {
+      var rs = mm.total_risk_score;
+      rb.textContent = rs < 8 ? 'NIEDRIG' : (rs <= 15 ? 'MITTEL' : 'HOCH');
+      rb.className = 'badge ' + (rs < 8 ? 'b-low' : (rs <= 15 ? 'b-mid' : 'b-high'));
+    }
+    setTxt('t-vast-med', fmt(mm.vast_median_usd, 2));
+    setTxt('t-vast-host', fmt(mm.vast_host_eur, 2));
+    setTxt('t-runpod-med', fmt(mm.runpod_community_usd, 2));
+    setTxt('t-runpod-host', fmt(mm.runpod_host_eur, 2));
+    setTxt('t-ionet-med', fmt(mm.ionet_usd, 2));
+    if (mm.ionet_usd != null) setTxt('t-ionet-host', fmt(mm.ionet_usd * 0.92 * 0.80, 2));
+    setTxt('t-spheron-med', fmt(mm.spheron_usd, 2));
+    setTxt('t-clore-med', fmt(mm.clore_usd, 2));
+    if (mm.clore_usd != null) setTxt('t-clore-host', fmt(mm.clore_usd * 0.92 * 0.85, 2));
+  })();
 })();
 </script>
 </body>
