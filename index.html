@@ -122,6 +122,14 @@
   .fc td,.fc th{border-bottom:1px solid var(--line);padding:6px 4px;font-size:12.5px}
   .prob{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px}
   @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.fc-grid{grid-template-columns:1fr}h1{font-size:24px}}
+  details.sec{border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.015),transparent)}
+  details.sec>summary{cursor:pointer;list-style:none;padding:14px 18px;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+  details.sec>summary::-webkit-details-marker{display:none}
+  details.sec>summary::after{content:"Details anzeigen ▸";margin-left:auto;font-size:12px;font-weight:600;color:var(--muted)}
+  details.sec[open]>summary::after{content:"ausblenden ▾"}
+  details.sec>summary:hover{color:var(--cyan)}
+  details.sec>*:not(summary){margin-left:18px;margin-right:18px}
+  details.sec>*:last-child{margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -783,7 +791,7 @@
                           "note":  "Automatischer Lauf.",
                           "metrics":  {
                                           "vast_median_usd":  0.115,
-                                          "vast_host_eur":  0.106,
+                                          "vast_host_eur":  0.105,
                                           "runpod_community_usd":  0.34,
                                           "runpod_host_eur":  0.291,
                                           "ionet_usd":  0.24,
@@ -1008,6 +1016,31 @@
     setTxt('t-clore-med', fmt(mm.clore_usd, 2));
     if (mm.clore_usd != null) setTxt('t-clore-host', fmt(mm.clore_usd * 0.92 * 0.85, 2));
   })();
+})();
+</script>
+<script>
+// Detail-Abschnitte in aufklappbare <details> umwandeln (einfache Standardansicht)
+(function () {
+  var titles = ['Aufgabe 1', 'Aufgabe 2', 'Analyse & Prognose', 'Host-Erfahrungsberichte', 'Aufgabe 3', 'Aufgabe 4', 'Offene Fragen'];
+  function isMatch(h) { var t = h.textContent || ''; return titles.some(function (s) { return t.indexOf(s) !== -1; }); }
+  var wrap = document.querySelector('.wrap');
+  if (!wrap) return;
+  var heads = Array.prototype.slice.call(wrap.querySelectorAll(':scope > h2, :scope > h3'));
+  heads.forEach(function (h) {
+    if (!isMatch(h)) return;
+    var det = document.createElement('details');
+    det.className = 'sec';
+    var sum = document.createElement('summary');
+    sum.innerHTML = h.innerHTML;
+    det.appendChild(sum);
+    var sib = h.nextElementSibling, nodes = [];
+    while (sib && sib.tagName !== 'H2' && sib.tagName !== 'FOOTER' && !(sib.tagName === 'H3' && isMatch(sib))) {
+      nodes.push(sib); sib = sib.nextElementSibling;
+    }
+    wrap.insertBefore(det, h);
+    nodes.forEach(function (n) { det.appendChild(n); });
+    wrap.removeChild(h);
+  });
 })();
 </script>
 </body>
