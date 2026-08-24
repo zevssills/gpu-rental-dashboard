@@ -1,5 +1,5 @@
 {
-    "_comment":  "Tages-Snapshots des GPU-Rental-Dashboards. Die tÃƒÂ¤gliche Automation liest diese Datei, hÃƒÂ¤ngt einen neuen Snapshot an und regeneriert index.html mit Delta-Anzeige ggÃƒÂ¼. Vortag. Werte: USD-Preise = Renter-Listenpreis; EUR-Werte = Host-Einnahme real (FX 0,92, abzgl. Plattform-Anteil).",
+    "_comment":  "Tages-Snapshots des GPU-Rental-Dashboards. Die tÃƒÆ’Ã‚Â¤gliche Automation liest diese Datei, hÃƒÆ’Ã‚Â¤ngt einen neuen Snapshot an und regeneriert index.html mit Delta-Anzeige ggÃƒÆ’Ã‚Â¼. Vortag. Werte: USD-Preise = Renter-Listenpreis; EUR-Werte = Host-Einnahme real (FX 0,92, abzgl. Plattform-Anteil).",
     "metricsMeta":  {
                         "vast_median_usd":  {
                                                 "label":  "Vast.ai Median (Renter)",
@@ -9,7 +9,7 @@
                                             },
                         "vast_host_eur":  {
                                               "label":  "Vast.ai Host-Einnahme",
-                                              "unit":  "Ã¢â€šÂ¬/h",
+                                              "unit":  "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬/h",
                                               "goodDirection":  "up",
                                               "decimals":  3
                                           },
@@ -21,7 +21,7 @@
                                                  },
                         "runpod_host_eur":  {
                                                 "label":  "RunPod Host-Einnahme",
-                                                "unit":  "Ã¢â€šÂ¬/h",
+                                                "unit":  "ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬/h",
                                                 "goodDirection":  "up",
                                                 "decimals":  3
                                             },
@@ -116,7 +116,7 @@
                       },
                       {
                           "date":  "2026-08-18",
-                          "note":  "Manueller Lauf (Automation war noch nicht gespeichert/aktiv). Vast leicht weicher; io.net/Spheron/Auslastung vom Vortag ÃƒÂ¼bernommen (heute nicht neu verifiziert); Clore-Angebote gestiegen.",
+                          "note":  "Manueller Lauf (Automation war noch nicht gespeichert/aktiv). Vast leicht weicher; io.net/Spheron/Auslastung vom Vortag ÃƒÆ’Ã‚Â¼bernommen (heute nicht neu verifiziert); Clore-Angebote gestiegen.",
                           "metrics":  {
                                           "vast_median_usd":  0.34,
                                           "vast_host_eur":  0.13,
@@ -146,6 +146,27 @@
                                           "ionet_usd":  0.24,
                                           "spheron_usd":  0.53,
                                           "clore_usd":  0.2,
+                                          "market_median_usd":  0.44,
+                                          "vast_utilization_pct":  98,
+                                          "ionet_offers":  691,
+                                          "clore_offers":  159,
+                                          "inference_cagr_pct":  12.98,
+                                          "aethir_arr_musd":  156,
+                                          "total_risk_score":  10.4,
+                                          "new_4090_price_usd":  2600
+                                      }
+                      },
+                      {
+                          "date":  "2026-08-24",
+                          "note":  "Automatischer Lauf.",
+                          "metrics":  {
+                                          "vast_median_usd":  0.115,
+                                          "vast_host_eur":  0.106,
+                                          "runpod_community_usd":  0.34,
+                                          "runpod_host_eur":  0.291,
+                                          "ionet_usd":  0.24,
+                                          "spheron_usd":  0.53,
+                                          "clore_usd":  0.171,
                                           "market_median_usd":  0.44,
                                           "vast_utilization_pct":  98,
                                           "ionet_offers":  691,
