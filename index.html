@@ -287,69 +287,14 @@
   <h2><span class="ic">📉</span> Preis-Trend-Chart &amp; Prognose (nächste Tage/Wochen)</h2>
 
   <div class="chartcard">
-    <div style="font-weight:700;font-size:14px;margin-bottom:2px">RTX 4090 · Median On-Demand-Mietpreis ($/h) – Verlauf &amp; Projektion</div>
-    <div class="src" style="margin-bottom:10px">Historie: anbieterübergreifender Median (getdeploying, 08/2025→08/2026: 0,60 $ → 0,44 $, ≈ −27 % YoY). Projektion = Modellrechnung, keine Garantie.</div>
-    <svg viewBox="0 0 800 320" role="img" aria-label="Preis-Trend RTX 4090">
-      <!-- gridlines -->
-      <g stroke="#26304a" stroke-width="1">
-        <line x1="50" y1="57.14" x2="780" y2="57.14"/>
-        <line x1="50" y1="131.43" x2="780" y2="131.43"/>
-        <line x1="50" y1="205.71" x2="780" y2="205.71"/>
-        <line x1="50" y1="280" x2="780" y2="280"/>
-      </g>
-      <!-- y labels -->
-      <g fill="#6b7899" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">
-        <text x="44" y="60">0,60&#36;</text>
-        <text x="44" y="134">0,50&#36;</text>
-        <text x="44" y="209">0,40&#36;</text>
-        <text x="44" y="283">0,30&#36;</text>
-      </g>
-      <!-- forecast start divider -->
-      <line x1="675.71" y1="20" x2="675.71" y2="280" stroke="#7c5cff" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
-      <text x="672" y="34" fill="#a78bff" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">heute (17.08.26)</text>
-      <text x="682" y="34" fill="#93a0bd" font-size="11" font-family="Segoe UI,sans-serif">Prognose &#8594;</text>
-      <!-- x labels -->
-      <g fill="#6b7899" font-size="11" text-anchor="middle" font-family="Segoe UI,sans-serif">
-        <text x="50" y="298">Aug&#8217;25</text>
-        <text x="206" y="298">Nov&#8217;25</text>
-        <text x="363" y="298">Feb&#8217;26</text>
-        <text x="519" y="298">Mai&#8217;26</text>
-        <text x="676" y="298">Aug&#8217;26</text>
-        <text x="780" y="298">Okt&#8217;26</text>
-      </g>
-      <!-- historical line -->
-      <polyline fill="none" stroke="#5b8cff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"
-        points="50,57.14 102.14,68.29 154.29,79.43 206.43,90.57 258.57,101 310.71,111.4 362.86,121.03 415,131.43 467.14,140.34 519.29,150 571.43,158.91 623.57,167.83 675.71,176"/>
-      <!-- stabilization forecast -->
-      <polyline fill="none" stroke="#31d07a" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
-        points="675.71,176 727.86,176 780,176"/>
-      <!-- base forecast -->
-      <polyline fill="none" stroke="#f5b73d" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
-        points="675.71,176 727.86,184.17 780,192.34"/>
-      <!-- bear forecast -->
-      <polyline fill="none" stroke="#ff5d6c" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"
-        points="675.71,176 727.86,202 780,226.5"/>
-      <!-- markers -->
-      <circle cx="50" cy="57.14" r="3.5" fill="#5b8cff"/>
-      <circle cx="675.71" cy="176" r="4.5" fill="#fff" stroke="#5b8cff" stroke-width="2"/>
-    </svg>
-    <div class="legend">
-      <span><i class="dot" style="background:#5b8cff"></i> Historie (Median)</span>
-      <span><i class="dot dash" style="border-color:#31d07a"></i> Stabilisierung</span>
-      <span><i class="dot dash" style="border-color:#f5b73d"></i> Basis-Trend (−2,5 %/Mon)</span>
-      <span><i class="dot dash" style="border-color:#ff5d6c"></i> Bear-Case (−8 %/Mon)</span>
-    </div>
+    <div style="font-weight:700;font-size:14px;margin-bottom:2px">RTX 4090 · Tages-Mietpreise ($/h) – Verlauf je Plattform</div>
+    <div class="src" id="trend-src" style="margin-bottom:10px">Tägliche Snapshots aus der aufgezeichneten Historie. Wächst mit jedem Automationslauf (08:00).</div>
+    <div id="trend-chart"><div class="src">Chart wird geladen…</div></div>
+    <div class="legend" id="trend-legend"></div>
   </div>
 
-  <h3>Plattform-Preisvergleich · aktueller Median $/h (17.08.2026)</h3>
-  <div class="chartcard">
-    <div class="cmp"><span class="plat">Clore.ai</span><span class="track"><span style="width:25%;background:linear-gradient(90deg,#31d07a,#25d0c0)"></span></span><span class="pv">0,15 $</span></div>
-    <div class="cmp"><span class="plat">io.net</span><span class="track"><span style="width:50%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">~0,30 $</span></div>
-    <div class="cmp"><span class="plat">RunPod</span><span class="track"><span style="width:57%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">0,34 $</span></div>
-    <div class="cmp"><span class="plat">Vast.ai</span><span class="track"><span style="width:58%;background:linear-gradient(90deg,#5b8cff,#7c5cff)"></span></span><span class="pv">~0,35 $</span></div>
-    <div class="cmp"><span class="plat">Spheron</span><span class="track"><span style="width:90%;background:linear-gradient(90deg,#f5b73d,#ff8a3d)"></span></span><span class="pv">0,53 $</span></div>
-    <div class="cmp"><span class="plat">Aethir</span><span class="track"><span style="width:0%"></span></span><span class="pv na">n/v</span></div>
-  </div>
+  <h3 id="plat-compare-title">Plattform-Preisvergleich · aktuelle Tages-Preise $/h</h3>
+  <div class="chartcard" id="plat-compare"><div class="src">Wird geladen…</div></div>
 
   <h3>Analyse &amp; Prognose der nächsten Tage/Wochen</h3>
   <div class="fc-grid">
@@ -900,6 +845,107 @@
     var ar = dd > 0 ? '↑' : (dd < 0 ? '↓' : '→');
     var fc = dd > 0 ? 't-up' : (dd < 0 ? 't-down' : 't-flat');
     footEl.innerHTML = '<span class="trend ' + fc + '">' + ar + ' ' + (dd > 0 ? '+' : '') + fmt(dd, 3) + ' $ vs. ' + prev.date + '</span>';
+  }
+
+  // ---- Tages-Trend-Chart (SVG) aus allen Snapshots ------------------------
+  function dDM(s)  { var p = s.split('-'); return p[2] + '.' + p[1]; }
+  function dDMY(s) { var p = s.split('-'); return p[2] + '.' + p[1] + '.' + p[0].slice(2); }
+
+  var trendEl = document.getElementById('trend-chart');
+  if (trendEl) {
+    var series = [
+      { key: 'vast_median_usd',      name: 'Vast.ai',  color: '#5b8cff' },
+      { key: 'clore_usd',            name: 'Clore.ai', color: '#31d07a' },
+      { key: 'runpod_community_usd', name: 'RunPod',   color: '#7c5cff' },
+      { key: 'ionet_usd',            name: 'io.net',   color: '#f5b73d' }
+    ];
+    var W = 800, H = 320, padL = 52, padR = 18, padT = 18, padB = 44;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var n = snaps.length;
+
+    var vals = [];
+    snaps.forEach(function (s) {
+      series.forEach(function (se) {
+        var v = s.metrics ? s.metrics[se.key] : null;
+        if (v != null && !isNaN(v)) vals.push(Number(v));
+      });
+    });
+    var vmin = Math.min.apply(null, vals), vmax = Math.max.apply(null, vals);
+    if (vmin === vmax) { vmin = vmin * 0.9; vmax = vmax * 1.1 || 1; }
+    var pad = (vmax - vmin) * 0.12; vmin = Math.max(0, vmin - pad); vmax = vmax + pad;
+
+    function xAt(i) { return n > 1 ? padL + i * plotW / (n - 1) : padL + plotW / 2; }
+    function yAt(v) { return padT + (vmax - v) / (vmax - vmin) * plotH; }
+
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Tages-Preis-Trend RTX 4090" style="width:100%;height:auto">';
+    // gridlines + y labels
+    var GL = 4;
+    for (var g = 0; g <= GL; g++) {
+      var yv = vmin + (vmax - vmin) * g / GL;
+      var yy = yAt(yv);
+      svg += '<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yy.toFixed(1) + '" stroke="#26304a" stroke-width="1"/>';
+      svg += '<text x="' + (padL - 6) + '" y="' + (yy + 4).toFixed(1) + '" fill="#6b7899" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">' + fmt(yv, 2) + ' $</text>';
+    }
+    // x labels (max ~12 to avoid crowding)
+    var step = Math.ceil(n / 12);
+    for (var i = 0; i < n; i++) {
+      if (i % step !== 0 && i !== n - 1) continue;
+      svg += '<text x="' + xAt(i).toFixed(1) + '" y="' + (H - padB + 18) + '" fill="#6b7899" font-size="11" text-anchor="middle" font-family="Segoe UI,sans-serif">' + dDM(snaps[i].date) + '</text>';
+    }
+    // "heute" marker at last point
+    var xLast = xAt(n - 1);
+    svg += '<line x1="' + xLast.toFixed(1) + '" y1="' + padT + '" x2="' + xLast.toFixed(1) + '" y2="' + (padT + plotH) + '" stroke="#7c5cff" stroke-width="1" stroke-dasharray="4 4" opacity=".6"/>';
+    svg += '<text x="' + (xLast - 6).toFixed(1) + '" y="' + (padT + 12) + '" fill="#a78bff" font-size="11" text-anchor="end" font-family="Segoe UI,sans-serif">heute (' + dDMY(snaps[n - 1].date) + ')</text>';
+    // series lines + points
+    series.forEach(function (se) {
+      var pts = [];
+      snaps.forEach(function (s, i) {
+        var v = s.metrics ? s.metrics[se.key] : null;
+        if (v != null && !isNaN(v)) pts.push(xAt(i).toFixed(1) + ',' + yAt(Number(v)).toFixed(1));
+      });
+      if (pts.length) {
+        svg += '<polyline fill="none" stroke="' + se.color + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="' + pts.join(' ') + '"/>';
+        pts.forEach(function (p) { var xy = p.split(','); svg += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="3" fill="' + se.color + '"/>'; });
+      }
+    });
+    svg += '</svg>';
+    trendEl.innerHTML = svg;
+
+    var legEl = document.getElementById('trend-legend');
+    if (legEl) {
+      legEl.innerHTML = series.map(function (se) {
+        return '<span><i class="dot" style="background:' + se.color + '"></i> ' + se.name + '</span>';
+      }).join('');
+    }
+    var tsrc = document.getElementById('trend-src');
+    if (tsrc) tsrc.textContent = 'Tägliche Snapshots ' + snaps[0].date + ' → ' + snaps[n - 1].date + ' · ' + n + ' Tage aufgezeichnet. Wächst mit jedem Automationslauf (08:00).';
+  }
+
+  // ---- Plattform-Preisvergleich (Balken) aus neuestem Snapshot ------------
+  var pcEl = document.getElementById('plat-compare');
+  if (pcEl && cur.metrics) {
+    var plats = [
+      { name: 'Clore.ai', v: cur.metrics.clore_usd,            grad: 'linear-gradient(90deg,#31d07a,#25d0c0)' },
+      { name: 'io.net',   v: cur.metrics.ionet_usd,            grad: 'linear-gradient(90deg,#5b8cff,#7c5cff)' },
+      { name: 'RunPod',   v: cur.metrics.runpod_community_usd, grad: 'linear-gradient(90deg,#5b8cff,#7c5cff)' },
+      { name: 'Vast.ai',  v: cur.metrics.vast_median_usd,      grad: 'linear-gradient(90deg,#5b8cff,#7c5cff)' },
+      { name: 'Spheron',  v: cur.metrics.spheron_usd,          grad: 'linear-gradient(90deg,#f5b73d,#ff8a3d)' }
+    ];
+    var maxv = 0;
+    plats.forEach(function (p) { if (p.v != null && p.v > maxv) maxv = p.v; });
+    var html = '';
+    plats.forEach(function (p) {
+      if (p.v == null || isNaN(p.v)) {
+        html += '<div class="cmp"><span class="plat">' + p.name + '</span><span class="track"><span style="width:0%"></span></span><span class="pv na">n/v</span></div>';
+      } else {
+        var w = maxv > 0 ? Math.round(p.v / maxv * 100) : 0;
+        html += '<div class="cmp"><span class="plat">' + p.name + '</span><span class="track"><span style="width:' + w + '%;background:' + p.grad + '"></span></span><span class="pv">' + fmt(p.v, 2) + ' $</span></div>';
+      }
+    });
+    html += '<div class="cmp"><span class="plat">Aethir</span><span class="track"><span style="width:0%"></span></span><span class="pv na">n/v</span></div>';
+    pcEl.innerHTML = html;
+    var pct = document.getElementById('plat-compare-title');
+    if (pct) pct.textContent = 'Plattform-Preisvergleich · Tages-Preise $/h (' + dDMY(cur.date) + ')';
   }
 })();
 </script>
