@@ -139,8 +139,8 @@
                           "date":  "2026-08-21",
                           "note":  "Catch-up-Lauf (Vergleich ggü. 18.08.). Quelle rentgpu.org. Echte Bewegung: Clore.ai $0,15→$0,18. io.net auf tatsächlichen Listenpreis $0,24 korrigiert (laut 90-Tage-Verlauf konstant). Spheron/Auslastung/Markt-Median nicht neu verifiziert (übernommen).",
                           "metrics":  {
-                                          "vast_median_usd":  0.33,
-                                          "vast_host_eur":  0.11,
+                                          "vast_median_usd":  0.114,
+                                          "vast_host_eur":  0.105,
                                           "runpod_community_usd":  0.34,
                                           "runpod_host_eur":  0.29,
                                           "ionet_usd":  0.24,

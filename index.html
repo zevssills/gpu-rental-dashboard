@@ -147,8 +147,8 @@
   <div class="kpis">
     <div class="kpi">
       <div class="label">RTX 4090 Median-Preis (Vast.ai)</div>
-      <div class="val">~0,33 $ <span style="font-size:15px;color:var(--muted)">/h (≈0,30 €)</span></div>
-      <div class="foot"><span class="trend t-down">↓ −0,01 $ vs. 18.08.</span> &nbsp;Range 0,11–0,85 $</div>
+      <div class="val" id="kpi-vast-val">~0,33 $ <span style="font-size:15px;color:var(--muted)">/h (≈0,30 €)</span></div>
+      <div class="foot" id="kpi-vast-foot"><span class="trend t-down">↓ −0,01 $ vs. Vortag</span></div>
     </div>
     <div class="kpi">
       <div class="label">Verfügbare RTX 4090 Nodes</div>
@@ -784,8 +784,8 @@
                           "date":  "2026-08-21",
                           "note":  "Catch-up-Lauf (Vergleich ggü. 18.08.). Quelle rentgpu.org. Echte Bewegung: Clore.ai $0,15→$0,18. io.net auf tatsächlichen Listenpreis $0,24 korrigiert (laut 90-Tage-Verlauf konstant). Spheron/Auslastung/Markt-Median nicht neu verifiziert (übernommen).",
                           "metrics":  {
-                                          "vast_median_usd":  0.33,
-                                          "vast_host_eur":  0.11,
+                                          "vast_median_usd":  0.114,
+                                          "vast_host_eur":  0.105,
                                           "runpod_community_usd":  0.34,
                                           "runpod_host_eur":  0.29,
                                           "ionet_usd":  0.24,
@@ -885,6 +885,22 @@
     '<div class="tablewrap"><table><thead><tr>' +
     '<th>Kennzahl</th><th>Vortag (' + prev.date + ')</th><th>Heute (' + cur.date + ')</th><th>Änderung</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+
+  // KPI-Karte "RTX 4090 Median-Preis" aus dem neuesten Snapshot befuellen (bleibt so immer aktuell)
+  var vv = cur.metrics ? cur.metrics.vast_median_usd : null;
+  var vh = cur.metrics ? cur.metrics.vast_host_eur : null;
+  var pv = prev.metrics ? prev.metrics.vast_median_usd : null;
+  var valEl = document.getElementById('kpi-vast-val');
+  var footEl = document.getElementById('kpi-vast-foot');
+  if (valEl && vv != null) {
+    valEl.innerHTML = '~' + fmt(vv, 2) + ' $ <span style="font-size:15px;color:var(--muted)">/h (≈' + fmt(vh, 2) + ' €)</span>';
+  }
+  if (footEl && vv != null && pv != null) {
+    var dd = vv - pv;
+    var ar = dd > 0 ? '↑' : (dd < 0 ? '↓' : '→');
+    var fc = dd > 0 ? 't-up' : (dd < 0 ? 't-down' : 't-flat');
+    footEl.innerHTML = '<span class="trend ' + fc + '">' + ar + ' ' + (dd > 0 ? '+' : '') + fmt(dd, 3) + ' $ vs. ' + prev.date + '</span>';
+  }
 })();
 </script>
 </body>
