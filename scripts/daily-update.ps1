@@ -43,7 +43,7 @@ function Get-LastSeriesValue([string]$html, [string]$name) {
 }
 
 # --- Historie laden + Carry-forward vom letzten Snapshot -------------------
-$histRaw = Get-Content $histPath -Raw
+$histRaw = Get-Content $histPath -Raw -Encoding UTF8
 $hist = $histRaw | ConvertFrom-Json
 $last = $hist.snapshots[$hist.snapshots.Count - 1]
 $m = @{}
@@ -104,7 +104,7 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($histPath, $jsonOut, $utf8)
 
 # --- index.html spiegeln ---------------------------------------------------
-$htmlText = Get-Content $htmlPath -Raw
+$htmlText = Get-Content $htmlPath -Raw -Encoding UTF8
 $rxData = [regex]'(?s)(<script type="application/json" id="history-data">\s*).*?(\s*</script>)'
 $htmlText = $rxData.Replace($htmlText, { param($mm) $mm.Groups[1].Value + $jsonOut + $mm.Groups[2].Value }, 1)
 $rxDate = [regex]'(Datenstand: <b>)\d{2}\.\d{2}\.\d{4}(</b>)'
