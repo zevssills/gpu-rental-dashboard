@@ -142,6 +142,38 @@
     </div>
   </header>
 
+  <!-- ============ KURZFAZIT (einfach) ============ -->
+  <div style="background:linear-gradient(180deg,#1b2233,#161c2a);border:1px solid var(--line);border-left:5px solid var(--amber);border-radius:14px;padding:20px 22px;margin:18px 0 8px">
+    <div style="display:inline-block;background:var(--amberbg);color:var(--amber);font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;letter-spacing:.02em">⏳ EMPFEHLUNG: ABWARTEN / BEOBACHTEN</div>
+    <h2 style="margin:12px 0 6px;border:0;padding:0">Kurzfazit – was heißt das für dich?</h2>
+    <p style="margin:0 0 14px;color:var(--muted);font-size:15px;line-height:1.6">
+      In einfachen Worten: Eine gebrauchte RTX 4090 für <b>3.500 €</b> zum Vermieten lohnt sich <b>aktuell noch nicht</b>.
+      Die Mietpreise fallen, und pro Stunde bleibt real nur wenig übrig. <b>Kaufe nur, wenn du den Preis deutlich drücken kannst.</b>
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" class="verdict-facts">
+      <div style="background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px 14px">
+        <div style="font-size:12.5px;color:var(--muted);font-weight:600">💰 Dein realer Verdienst</div>
+        <div style="font-size:22px;font-weight:800;margin-top:6px">~<span id="v-earn">0,11</span> € <span style="font-size:13px;color:var(--muted)">/ Stunde</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:4px">auf Vast, wenn die Karte läuft (nach Gebühren) – <b>nur wenn ausgelastet</b></div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px 14px">
+        <div style="font-size:12.5px;color:var(--muted);font-weight:600">🏷️ Neupreis vs. dein Angebot</div>
+        <div style="font-size:22px;font-weight:800;margin-top:6px">~<span id="v-newprice">2.400</span> € <span style="font-size:13px;color:var(--muted)">neu</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:4px">dein Angebot: <b>3.500 €</b> → liegt klar darüber</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px 14px">
+        <div style="font-size:12.5px;color:var(--muted);font-weight:600">📉 Preistrend</div>
+        <div style="font-size:22px;font-weight:800;margin-top:6px">fallend</div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:4px">Mietpreise seit Monaten leicht runter – Warten kostet wenig</div>
+      </div>
+    </div>
+    <p style="margin:14px 0 0;font-size:14px;line-height:1.6">
+      <b>Unterm Strich:</b> Zu 3.500 € ist der Kauf riskant – du verdienst real nur wenige Cent bis Euro pro Stunde und nur,
+      wenn die Karte gut ausgelastet ist. <b>Lohnend wird es v. a. bei einem Kaufpreis um ~2.000–2.200 €.</b>
+      Sonst bringt dir das <b>Einspeisen deines Solarstroms</b> (0,08 €/kWh) über 3 Jahre mehr Sicherheit bei weniger Aufwand.
+    </p>
+  </div>
+
   <!-- ============ KPI ============ -->
   <h2><span class="ic">📊</span> KPI-Übersicht</h2>
   <div class="kpis">
@@ -952,6 +984,11 @@
   (function () {
     var mm = cur.metrics || {};
     function setTxt(id, v) { var e = document.getElementById(id); if (e && v != null && !isNaN(v)) e.textContent = v; }
+    // Kurzfazit
+    setTxt('v-earn', fmt(mm.vast_host_eur, 2));
+    if (mm.new_4090_price_usd != null) {
+      setTxt('v-newprice', Math.round(mm.new_4090_price_usd * 0.92).toLocaleString('de-DE'));
+    }
     setTxt('kpi-cagr-val', fmt(mm.inference_cagr_pct, 2));
     setTxt('kpi-risk-val', fmt(mm.total_risk_score, 1));
     setTxt('kpi-util', fmt(mm.vast_utilization_pct, 0));
