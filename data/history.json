@@ -197,6 +197,27 @@
                                           "total_risk_score":  10.4,
                                           "new_4090_price_usd":  2600
                                       }
+                      },
+                      {
+                          "date":  "2026-08-26",
+                          "note":  "Automatischer Lauf.",
+                          "metrics":  {
+                                          "vast_median_usd":  0.114,
+                                          "vast_host_eur":  0.105,
+                                          "runpod_community_usd":  0.34,
+                                          "runpod_host_eur":  0.291,
+                                          "ionet_usd":  0.24,
+                                          "spheron_usd":  0.53,
+                                          "clore_usd":  0.164,
+                                          "market_median_usd":  0.44,
+                                          "vast_utilization_pct":  98,
+                                          "ionet_offers":  691,
+                                          "clore_offers":  159,
+                                          "inference_cagr_pct":  12.98,
+                                          "aethir_arr_musd":  156,
+                                          "total_risk_score":  10.4,
+                                          "new_4090_price_usd":  2600
+                                      }
                       }
                   ]
 }
