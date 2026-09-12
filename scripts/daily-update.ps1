@@ -78,6 +78,24 @@ try {
   Log ("preis-JSON FEHLER: " + $_.Exception.Message)
 }
 
+# --- Quelle 3: Bitcoin (Kurs + Difficulty) fuer den Mining-Vergleich --------
+# Ertrag je TH/s und Tag = 86400 * 1e12 * Block-Subsidy * Kurs / (Difficulty * 2^32)
+try {
+  $diff = [double](Invoke-RestMethod -Uri 'https://blockchain.info/q/getdifficulty' -TimeoutSec 45)
+  $sub  = [double](Invoke-RestMethod -Uri 'https://blockchain.info/q/bcperblock'   -TimeoutSec 45)
+  $px   = Invoke-RestMethod -Uri 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur' -TimeoutSec 45
+  $btcEur = [double]$px.bitcoin.eur
+  if ($diff -gt 0 -and $btcEur -gt 0 -and $sub -gt 0) {
+    $revTh = 86400 * 1e12 * $sub * $btcEur / ($diff * [math]::Pow(2, 32))
+    $m['btc_price_eur']       = [math]::Round($btcEur, 0)
+    $m['mining_eur_per_th_d'] = [math]::Round($revTh, 5)
+    Log ("bitcoin OK: kurs={0} EUR, difficulty={1}, ertrag/TH/Tag={2} EUR" -f $m['btc_price_eur'], $diff, $m['mining_eur_per_th_d'])
+  }
+} catch {
+  $notes += 'Bitcoin-Daten nicht erreichbar (Mining-Werte uebernommen)'
+  Log ("bitcoin FEHLER: " + $_.Exception.Message)
+}
+
 $note = 'Automatischer Lauf.'
 if ($notes.Count) { $note += ' ' + ($notes -join '; ') + '.' }
 
@@ -85,7 +103,7 @@ if ($notes.Count) { $note += ' ' + ($notes -join '; ') + '.' }
 $keys = @('vast_median_usd','vast_host_eur','runpod_community_usd','runpod_host_eur',
           'ionet_usd','spheron_usd','clore_usd','market_median_usd','vast_utilization_pct',
           'ionet_offers','clore_offers','inference_cagr_pct','aethir_arr_musd',
-          'total_risk_score','new_4090_price_usd')
+          'total_risk_score','new_4090_price_usd','btc_price_eur','mining_eur_per_th_d')
 $metrics = [ordered]@{}
 foreach ($k in $keys) { $metrics[$k] = $m[$k] }
 $snap = [pscustomobject]@{ date = $today; note = $note; metrics = [pscustomobject]$metrics }

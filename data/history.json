@@ -90,7 +90,19 @@
                                                    "unit":  "$",
                                                    "goodDirection":  "down",
                                                    "decimals":  0
-                                               }
+                                               },
+                        "btc_price_eur":  {
+                                              "label":  "Bitcoin-Kurs",
+                                              "unit":  "€",
+                                              "goodDirection":  "up",
+                                              "decimals":  0
+                                          },
+                        "mining_eur_per_th_d":  {
+                                                    "label":  "Mining-Ertrag je TH/Tag",
+                                                    "unit":  "€",
+                                                    "goodDirection":  "up",
+                                                    "decimals":  5
+                                                }
                     },
     "snapshots":  [
                       {
@@ -406,6 +418,29 @@
                                           "aethir_arr_musd":  156,
                                           "total_risk_score":  10.4,
                                           "new_4090_price_usd":  2600
+                                      }
+                      },
+                      {
+                          "date":  "2026-09-12",
+                          "note":  "Automatischer Lauf.",
+                          "metrics":  {
+                                          "vast_median_usd":  0.115,
+                                          "vast_host_eur":  0.106,
+                                          "runpod_community_usd":  0.34,
+                                          "runpod_host_eur":  0.291,
+                                          "ionet_usd":  0.24,
+                                          "spheron_usd":  0.59,
+                                          "clore_usd":  0.195,
+                                          "market_median_usd":  0.44,
+                                          "vast_utilization_pct":  98,
+                                          "ionet_offers":  691,
+                                          "clore_offers":  159,
+                                          "inference_cagr_pct":  12.98,
+                                          "aethir_arr_musd":  156,
+                                          "total_risk_score":  10.4,
+                                          "new_4090_price_usd":  2600,
+                                          "btc_price_eur":  66559,
+                                          "mining_eur_per_th_d":  0.03283
                                       }
                       }
                   ]
